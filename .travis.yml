@@ -14,7 +14,7 @@ dist: trusty
     
 env:
 # do a few less tests to not hit timeouts (see _Internal_Base.java in tests package)
-  -FAST_TESTS=true
+  -FASTTESTS=true
     
 # Cache Maven dependencies to speed up builds.
 cache:

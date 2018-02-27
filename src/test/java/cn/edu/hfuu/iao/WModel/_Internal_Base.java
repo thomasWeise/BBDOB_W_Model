@@ -14,7 +14,7 @@ abstract class _Internal_Base {
   static {
     boolean fast = false;
     try {
-      fast = Boolean.parseBoolean(System.getenv("FAST_TESTS")); //$NON-NLS-1$
+      fast = Boolean.parseBoolean(System.getenv("FASTTESTS")); //$NON-NLS-1$
     } catch (@SuppressWarnings("unused") final Throwable ignore) {
       //
     }
