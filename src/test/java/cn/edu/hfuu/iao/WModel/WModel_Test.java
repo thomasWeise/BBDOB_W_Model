@@ -86,7 +86,8 @@ public abstract class WModel_Test<T> extends _Internal_Base {
    */
   @Test(timeout = 3600000)
   public void toString_fromString_exhaustive() {
-    for (int i = 1; i <= 22; i++) {
+    final int maxI = _Internal_Base.FAST_TESTS ? 20 : 22;
+    for (int i = 1; i <= maxI; i++) {
       this.__to_and_from_exhaustive(i);
     }
   }
@@ -213,7 +214,7 @@ public abstract class WModel_Test<T> extends _Internal_Base {
   /** test whether the epistasis transformation is OK */
   @Test(timeout = 3600000)
   public void epistasis_bijectivity_exhaustive() {
-    final int maxN = _Internal_Base.FAST_TESTS ? 19 : 22;
+    final int maxN = _Internal_Base.FAST_TESTS ? 18 : 22;
     for (int n = 1; n < maxN; n++) {
       for (int eta = 1; eta < n; ++eta) {
         this.__test_epistasis_bijectivity_exhaustively(n, eta);
@@ -273,7 +274,8 @@ public abstract class WModel_Test<T> extends _Internal_Base {
   /** test whether the epistasis transformation is OK */
   @Test(timeout = 3600000)
   public void epistasis_promise_exhaustive() {
-    for (int n = 1; n < 17; n++) {
+    final int maxN = _Internal_Base.FAST_TESTS ? 17 : 18;
+    for (int n = 1; n < maxN; n++) {
       for (int eta = 2; eta < n; ++eta) {
         this.__test_epistasis_promise_exhaustively(n, eta);
       }

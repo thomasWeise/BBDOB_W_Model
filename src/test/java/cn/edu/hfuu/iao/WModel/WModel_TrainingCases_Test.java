@@ -202,7 +202,7 @@ public class WModel_TrainingCases_Test extends _Internal_Base {
     final Random random = ThreadLocalRandom.current();
 
     final int maxN = _Internal_Base.FAST_TESTS ? 9 : 11;
-    final int maxSamples = _Internal_Base.FAST_TESTS ? 11 : 21;
+    final int maxSamples = _Internal_Base.FAST_TESTS ? 10 : 21;
 
     for (int n = 1; n < maxN; n++) {
       for (int t = (3 * n); t > 0; t--) {

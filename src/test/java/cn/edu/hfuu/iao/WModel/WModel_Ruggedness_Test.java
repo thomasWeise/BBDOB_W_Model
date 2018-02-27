@@ -163,7 +163,7 @@ public class WModel_Ruggedness_Test extends _Internal_Base {
   @SuppressWarnings("static-method")
   @Test(timeout = 3600000)
   public void ruggedness_ruggedness_translate() {
-    final int max = (_Internal_Base.FAST_TESTS ? 200 : 400);
+    final int max = (_Internal_Base.FAST_TESTS ? 150 : 400);
     for (int i = 1; i < max; i++) {
       WModel_Ruggedness_Test.__test_ruggedness_translate(i);
     }

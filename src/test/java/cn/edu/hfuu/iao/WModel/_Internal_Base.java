@@ -19,6 +19,9 @@ abstract class _Internal_Base {
       //
     }
     FAST_TESTS = fast;
+    if (_Internal_Base.FAST_TESTS) {
+      System.out.println("Fast test execution was chosen.");//$NON-NLS-1$
+    }
   }
 
   /**
