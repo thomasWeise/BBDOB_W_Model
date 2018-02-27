@@ -4,7 +4,7 @@ import java.util.Arrays;
 
 import org.junit.Assert;
 
-/** A test for the neutrality layer */
+/** A test for {@code boolean[]} representation */
 public class WModel_Boolean_Test extends WModel_Test<boolean[]> {
 
   /** {@inheritDoc} */

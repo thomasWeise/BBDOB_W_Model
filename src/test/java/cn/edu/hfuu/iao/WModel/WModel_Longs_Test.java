@@ -6,7 +6,7 @@ import org.junit.Assert;
 
 import cn.edu.hfuu.iao.WModel.WModel_Longs.Solution;
 
-/** A test for the neutrality layer */
+/** A test for {@code WModel_Longs} representation */
 public class WModel_Longs_Test extends WModel_Test<WModel_Longs.Solution> {
 
   /** {@inheritDoc} */

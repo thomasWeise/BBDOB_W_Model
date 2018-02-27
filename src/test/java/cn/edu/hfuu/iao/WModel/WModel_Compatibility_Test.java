@@ -7,42 +7,58 @@ import org.junit.Ignore;
 import org.junit.Test;
 
 /**
- * A base class for testing a single implementation of the W-Model
+ * A base class for testing the compatibility of two implementations of the
+ * W-Model. If a new implementation is added, we can add an
+ * implementation-specific test set and establish its compatibility to an
+ * existing, tested implementation. While the single-implementation tests
+ * check for keeping all promises defined in the paper, the compatibility
+ * test checks whether the computed values are also identical between two
+ * models.
  *
- * @param <T>
- *          the data type
+ * @param <T1>
+ *          the first type
+ * @param <T2>
+ *          the second type
  */
 @Ignore
-public abstract class WModel_Test<T> extends _Internal_Base {
+public abstract class WModel_Compatibility_Test<T1, T2>
+    extends _Internal_Base {
 
   /**
-   * Convert a string to a data object
+   * Convert a string to a data object of type 1
    *
    * @param str
    *          the string
    * @return the data object
    */
-  protected abstract T fromString(final String str);
+  protected abstract T1 fromString1(final String str);
 
   /**
-   * Convert a data object to a string
+   * Convert a data object of type 1 to a string
    *
    * @param data
    *          the data object
    * @return the string
    */
-  protected abstract String toString(final T data);
+  protected abstract String toString1(final T1 data);
 
   /**
-   * compare two data structures for equality
+   * Convert a string to a data object of type 2
    *
-   * @param a
-   *          the first data structure
-   * @param b
-   *          the second one
-   * @return {@code true} if and only if they are equal
+   * @param str
+   *          the string
+   * @return the data object
    */
-  protected abstract boolean equals(final T a, final T b);
+  protected abstract T2 fromString2(final String str);
+
+  /**
+   * Convert a data object of type 2 to a string
+   *
+   * @param data
+   *          the data object
+   * @return the string
+   */
+  protected abstract String toString2(final T2 data);
 
   /**
    * test exhaustively for n bits
@@ -60,12 +76,18 @@ public abstract class WModel_Test<T> extends _Internal_Base {
         bits[j] = (((i & (1 << j)) != 0) ? '1' : '0');
       }
       final String s_a = String.valueOf(bits);
-      final T t_a = this.fromString(s_a);
-      final String s_b = this.toString(t_a);
-      Assert.assertEquals(s_a, s_b);
-      final T t_b = this.fromString(s_b);
-      this.assertEqual(t_a, t_b);
-      Assert.assertTrue(set.add(s_b));
+      final T1 t_a1 = this.fromString1(s_a);
+      final T2 t_a2 = this.fromString2(s_a);
+      final String s_b1 = this.toString1(t_a1);
+      Assert.assertEquals(s_a, s_b1);
+      final String s_b2 = this.toString2(t_a2);
+      Assert.assertEquals(s_a, s_b2);
+      final T1 t_b1 = this.fromString1(s_b1);
+      final T2 t_b2 = this.fromString2(s_b2);
+      this.assertEqual(t_a1, t_b2);
+      this.assertEqual(t_b1, t_a2);
+      Assert.assertTrue(set.add(s_b1));
+      Assert.assertFalse(set.add(s_b2));
     }
     Assert.assertEquals((1 << n), set.size());
   }
@@ -78,15 +100,12 @@ public abstract class WModel_Test<T> extends _Internal_Base {
    * @param b
    *          the second one
    */
-  protected abstract void assertEqual(final T a, final T b);
+  protected abstract void assertEqual(final T1 a, final T2 b);
 
-  /**
-   * test whether the {@link #toString(Object)} and
-   * {@link #fromString(String)} methods work reliable
-   */
+  /** test whether the to- and from-string conversions work correctly */
   @Test(timeout = 3600000)
   public void toString_fromString_exhaustive() {
-    final int maxI = _Internal_Base.FAST_TESTS ? 20 : 22;
+    final int maxI = _Internal_Base.FAST_TESTS ? 16 : 20;
     for (int i = 1; i <= maxI; i++) {
       this.__to_and_from_exhaustive(i);
     }
@@ -101,7 +120,18 @@ public abstract class WModel_Test<T> extends _Internal_Base {
    *          the mu
    * @return the result
    */
-  protected abstract T compute_neutrality(final T in, final int mu);
+  protected abstract T1 compute_neutrality1(final T1 in, final int mu);
+
+  /**
+   * perform a neutrality transformation
+   *
+   * @param in
+   *          the input
+   * @param mu
+   *          the mu
+   * @return the result
+   */
+  protected abstract T2 compute_neutrality2(final T2 in, final int mu);
 
   /**
    * Run one neutrality test case
@@ -115,9 +145,14 @@ public abstract class WModel_Test<T> extends _Internal_Base {
    */
   protected final void test_neutrality(final String in, final int mu,
       final String out) {
-    final T x = this.fromString(in);
-    final T actual = this.compute_neutrality(x, mu);
-    Assert.assertEquals(out, this.toString(actual));
+    final T1 x1 = this.fromString1(in);
+    final T2 x2 = this.fromString2(in);
+    this.assertEqual(x1, x2);
+    final T1 actual1 = this.compute_neutrality1(x1, mu);
+    final T2 actual2 = this.compute_neutrality2(x2, mu);
+    this.assertEqual(actual1, actual2);
+    Assert.assertEquals(out, this.toString1(actual1));
+    Assert.assertEquals(out, this.toString2(actual2));
   }
 
   /**
@@ -139,7 +174,18 @@ public abstract class WModel_Test<T> extends _Internal_Base {
    *          the eta
    * @return the result
    */
-  protected abstract T compute_epistasis(final T in, final int eta);
+  protected abstract T1 compute_epistasis1(final T1 in, final int eta);
+
+  /**
+   * perform an epistasis transformation
+   *
+   * @param in
+   *          the input
+   * @param eta
+   *          the eta
+   * @return the result
+   */
+  protected abstract T2 compute_epistasis2(final T2 in, final int eta);
 
   /**
    * run a single epistasis test case
@@ -153,9 +199,14 @@ public abstract class WModel_Test<T> extends _Internal_Base {
    */
   protected final void test_epistasis(final String in, final int eta,
       final String out) {
-    final T x = this.fromString(in);
-    final T actual = this.compute_epistasis(x, eta);
-    Assert.assertEquals(out, this.toString(actual));
+    final T1 x1 = this.fromString1(in);
+    final T2 x2 = this.fromString2(in);
+    this.assertEqual(x1, x2);
+    final T1 actual1 = this.compute_epistasis1(x1, eta);
+    final T2 actual2 = this.compute_epistasis2(x2, eta);
+    this.assertEqual(actual1, actual2);
+    Assert.assertEquals(out, this.toString1(actual1));
+    Assert.assertEquals(out, this.toString2(actual2));
   }
 
   /**
@@ -204,9 +255,18 @@ public abstract class WModel_Test<T> extends _Internal_Base {
       final int eta) {
     final HashSet<String> set = new HashSet<>();
     _Internal_Base._exhaustive_iteration(n, (bits) -> {
-      final String result = this.toString(this.compute_epistasis(//
-          this.fromString(String.valueOf(bits)), eta));
-      Assert.assertTrue(set.add(result));
+      final String str = String.valueOf(bits);
+      final T1 x1 = this.fromString1(str);
+      final T2 x2 = this.fromString2(str);
+      this.assertEqual(x1, x2);
+      final T1 r1 = this.compute_epistasis1(x1, eta);
+      final T2 r2 = this.compute_epistasis2(x2, eta);
+      this.assertEqual(r1, r2);
+      final String s1 = this.toString1(r1);
+      final String s2 = this.toString2(r2);
+      Assert.assertEquals(s1, s2);
+      Assert.assertTrue(set.add(s1));
+      Assert.assertFalse(set.add(s1));
     });
     Assert.assertEquals((1 << n), set.size());
   }
@@ -214,70 +274,10 @@ public abstract class WModel_Test<T> extends _Internal_Base {
   /** test whether the epistasis transformation is OK */
   @Test(timeout = 3600000)
   public void epistasis_bijectivity_exhaustive() {
-    final int maxN = _Internal_Base.FAST_TESTS ? 18 : 22;
+    final int maxN = _Internal_Base.FAST_TESTS ? 14 : 16;
     for (int n = 1; n < maxN; n++) {
       for (int eta = 1; eta < n; ++eta) {
         this.__test_epistasis_bijectivity_exhaustively(n, eta);
-      }
-    }
-  }
-
-  /**
-   * test the epistasis promise exhaustively
-   *
-   * @param n
-   *          the number of bits
-   * @param eta
-   *          the eta
-   */
-  private final void __test_epistasis_promise_exhaustively(final int n,
-      final int eta) {
-    final char[] other = new char[n];
-    _Internal_Base._exhaustive_iteration(n, (bits) -> {
-      final String vbits = this.toString(this
-          .compute_epistasis(this.fromString(String.valueOf(bits)), eta));
-      System.arraycopy(bits, 0, other, 0, n);
-
-      final int remainingPromise = n % eta;
-      final int maxPromiseIndex = (n - remainingPromise);
-
-      for (int i = n; (--i) >= 0;) {
-        other[i] = _Internal_Base._bit(!(_Internal_Base._bit(other[i])));
-        final String vother = this.toString(this.compute_epistasis(
-            this.fromString(String.valueOf(other)), eta));
-        int changed = 0;
-
-        for (int j = n; (--j) >= 0;) {
-          if (vbits.charAt(j) != vother.charAt(j)) {
-            changed++;
-          }
-        }
-
-        final int promise = (i < maxPromiseIndex) ? (eta - 1)
-            : (remainingPromise - 1);
-
-        if (changed < promise) {
-          Assert.fail("the number " + //$NON-NLS-1$
-          changed + " of changed bits must be greater or equal to " //$NON-NLS-1$
-              + promise + " when moving from " + //$NON-NLS-1$
-          String.valueOf(bits) + " to "//$NON-NLS-1$
-              + String.valueOf(other) + //
-          " for eta=" + eta + //$NON-NLS-1$
-          ", but got " + //$NON-NLS-1$
-          vbits + " and " + vother);//$NON-NLS-1$
-        }
-        other[i] = bits[i];
-      }
-    });
-  }
-
-  /** test whether the epistasis transformation is OK */
-  @Test(timeout = 3600000)
-  public void epistasis_promise_exhaustive() {
-    final int maxN = _Internal_Base.FAST_TESTS ? 17 : 18;
-    for (int n = 1; n < maxN; n++) {
-      for (int eta = 2; eta < n; ++eta) {
-        this.__test_epistasis_promise_exhaustively(n, eta);
       }
     }
   }
@@ -291,7 +291,18 @@ public abstract class WModel_Test<T> extends _Internal_Base {
    *          the expected string length
    * @return the objective value
    */
-  protected abstract int compute_f(final T in, final int n);
+  protected abstract int compute_f1(final T1 in, final int n);
+
+  /**
+   * compute a plain objective value
+   *
+   * @param in
+   *          the input
+   * @param n
+   *          the expected string length
+   * @return the objective value
+   */
+  protected abstract int compute_f2(final T2 in, final int n);
 
   /**
    * Run one test case of the objective function
@@ -305,9 +316,12 @@ public abstract class WModel_Test<T> extends _Internal_Base {
    */
   protected final void test_f(final String in, final int n,
       final int out) {
-    final T x = this.fromString(in);
-    final int actual = this.compute_f(x, n);
-    Assert.assertEquals(out, actual);
+    final T1 x1 = this.fromString1(in);
+    final T2 x2 = this.fromString2(in);
+    final int actual1 = this.compute_f1(x1, n);
+    final int actual2 = this.compute_f2(x2, n);
+    Assert.assertEquals(out, actual1);
+    Assert.assertEquals(out, actual2);
   }
 
   /**
@@ -567,8 +581,22 @@ public abstract class WModel_Test<T> extends _Internal_Base {
    *          the expected string length
    * @return the array with the multiple objective splits
    */
-  protected abstract T[] compute_multi_objectives(final T in, final int m,
-      final int n);
+  protected abstract T1[] compute_multi_objectives1(final T1 in,
+      final int m, final int n);
+
+  /**
+   * compute a multi-objective split
+   *
+   * @param in
+   *          the input
+   * @param m
+   *          the number of objectives
+   * @param n
+   *          the expected string length
+   * @return the array with the multiple objective splits
+   */
+  protected abstract T2[] compute_multi_objectives2(final T2 in,
+      final int m, final int n);
 
   /**
    * Run one test case of the multiple objectives
@@ -582,11 +610,15 @@ public abstract class WModel_Test<T> extends _Internal_Base {
    */
   protected final void test_multiple_objectives(final String in,
       final int n, final String... out) {
-    final T x = this.fromString(in);
-    final T[] actual = this.compute_multi_objectives(x, out.length, n);
-    Assert.assertEquals(out.length, actual.length);
+    final T1 x1 = this.fromString1(in);
+    final T2 x2 = this.fromString2(in);
+    final T1[] actual1 = this.compute_multi_objectives1(x1, out.length, n);
+    final T2[] actual2 = this.compute_multi_objectives2(x2, out.length, n);
+    Assert.assertEquals(out.length, actual1.length);
+    Assert.assertEquals(out.length, actual2.length);
     for (int i = 0; i < out.length; i++) {
-      Assert.assertEquals(out[i], this.toString(actual[i]));
+      Assert.assertEquals(out[i], this.toString1(actual1[i]));
+      Assert.assertEquals(out[i], this.toString2(actual2[i]));
     }
   }
 
@@ -607,7 +639,19 @@ public abstract class WModel_Test<T> extends _Internal_Base {
    *          the training cases
    * @return the objective value
    */
-  protected abstract int compute_f_training_cases(final T in,
+  protected abstract int compute_f_training_cases1(final T1 in,
+      final long[] training);
+
+  /**
+   * compute a objective value based on training cases
+   *
+   * @param in
+   *          the input
+   * @param training
+   *          the training cases
+   * @return the objective value
+   */
+  protected abstract int compute_f_training_cases2(final T2 in,
       final long[] training);
 
   /**
@@ -622,8 +666,10 @@ public abstract class WModel_Test<T> extends _Internal_Base {
    */
   protected final void test_training_cases(final String in,
       final long[] training, final int out) {
-    final T x = this.fromString(in);
-    Assert.assertEquals(out, this.compute_f_training_cases(x, training));
+    final T1 x1 = this.fromString1(in);
+    final T2 x2 = this.fromString2(in);
+    Assert.assertEquals(out, this.compute_f_training_cases1(x1, training));
+    Assert.assertEquals(out, this.compute_f_training_cases2(x2, training));
   }
 
   /** check the paper example for training cases */
