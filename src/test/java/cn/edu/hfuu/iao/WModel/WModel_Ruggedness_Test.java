@@ -4,7 +4,7 @@ import org.junit.Assert;
 import org.junit.Test;
 
 /** Testing the ruggedness layer. */
-public class WModel_Ruggedness_Test {
+public class WModel_Ruggedness_Test extends _Internal_Base {
   /** test the paper example 1 */
   @SuppressWarnings("static-method")
   @Test(timeout = 3600000)
@@ -163,7 +163,8 @@ public class WModel_Ruggedness_Test {
   @SuppressWarnings("static-method")
   @Test(timeout = 3600000)
   public void ruggedness_ruggedness_translate() {
-    for (int i = 1; i < 300; i++) {
+    final int max = (_Internal_Base.FAST_TESTS ? 200 : 400);
+    for (int i = 1; i < max; i++) {
       WModel_Ruggedness_Test.__test_ruggedness_translate(i);
     }
   }

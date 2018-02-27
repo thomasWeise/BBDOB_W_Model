@@ -8,6 +8,19 @@ import org.junit.Ignore;
 @Ignore
 abstract class _Internal_Base {
 
+  /** should we use fast tests? */
+  public static final boolean FAST_TESTS;
+
+  static {
+    boolean fast = false;
+    try {
+      fast = Boolean.parseBoolean(System.getenv("fast-tests")); //$NON-NLS-1$
+    } catch (@SuppressWarnings("unused") final Throwable ignore) {
+      //
+    }
+    FAST_TESTS = fast;
+  }
+
   /**
    * get the value of the bit in {@code x} at index {@code index}
    *

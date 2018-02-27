@@ -7,7 +7,7 @@ import org.junit.Assert;
 import org.junit.Test;
 
 /** A test class for training cases */
-public class WModel_TrainingCases_Test {
+public class WModel_TrainingCases_Test extends _Internal_Base {
 
   /** check the paper example for training cases */
   @SuppressWarnings("static-method")
@@ -127,11 +127,15 @@ public class WModel_TrainingCases_Test {
   @Test(timeout = 3600000)
   public void random_training_cases() {
     final Random random = ThreadLocalRandom.current();
-    for (int n = 1; n < 26; n++) {
+
+    final int maxN = (_Internal_Base.FAST_TESTS ? 20 : 27);
+    final int maxSamples = (_Internal_Base.FAST_TESTS ? 15 : 21);
+
+    for (int n = 1; n < maxN; n++) {
       for (int t = (3 * n); t > 0; t--) {
         for (int epsilon = n; epsilon >= 0; --epsilon) {
           for (int o = (n - epsilon); o >= 0; --o) {
-            for (int samples = 20; (--samples) >= 0;) {
+            for (int samples = maxSamples; (--samples) >= 0;) {
               WModel_TrainingCases_Test.__test_sample_training_case(n,
                   epsilon, o, t, random);
             }
@@ -196,11 +200,15 @@ public class WModel_TrainingCases_Test {
   @Test(timeout = 3600000)
   public void random_training_cases_ruggness() {
     final Random random = ThreadLocalRandom.current();
-    for (int n = 1; n < 11; n++) {
+
+    final int maxN = _Internal_Base.FAST_TESTS ? 9 : 11;
+    final int maxSamples = _Internal_Base.FAST_TESTS ? 11 : 21;
+
+    for (int n = 1; n < maxN; n++) {
       for (int t = (3 * n); t > 0; t--) {
         for (int epsilon = n; epsilon >= 0; --epsilon) {
           for (int o = (n - epsilon); o >= 0; --o) {
-            for (int samples = 20; (--samples) >= 0;) {
+            for (int samples = maxSamples; (--samples) >= 0;) {
               WModel_TrainingCases_Test
                   .__test_sample_training_case_ruggedness(n, epsilon, o, t,
                       random);

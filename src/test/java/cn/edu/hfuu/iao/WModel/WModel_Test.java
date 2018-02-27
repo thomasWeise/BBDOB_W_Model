@@ -213,7 +213,8 @@ public abstract class WModel_Test<T> extends _Internal_Base {
   /** test whether the epistasis transformation is OK */
   @Test(timeout = 3600000)
   public void epistasis_bijectivity_exhaustive() {
-    for (int n = 1; n < 22; n++) {
+    final int maxN = _Internal_Base.FAST_TESTS ? 19 : 22;
+    for (int n = 1; n < maxN; n++) {
       for (int eta = 1; eta < n; ++eta) {
         this.__test_epistasis_bijectivity_exhaustively(n, eta);
       }
