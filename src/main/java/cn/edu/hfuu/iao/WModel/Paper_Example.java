@@ -10,7 +10,7 @@ public class Paper_Example {
    *          the args (ignored)
    */
   public static final void main(final String[] args) {
-    final boolean[] x = { false, true, false, false, false, true, true,
+    final boolean[] x = { false, true, false, true, false, true, true,
         false, false, false, false, false, true, true, true, false, true,
         false, false, false, false, };
 
@@ -38,24 +38,25 @@ public class Paper_Example {
     Paper_Example.__print(x_after_multi_obj[1]);
     System.out.println();
 
-    final long[] cases = WModel_TrainingCases.fromString(//
-        "*10001", //$NON-NLS-1$
-        "0101*0", //$NON-NLS-1$
-        "1*0111", //$NON-NLS-1$
-        "111*01", //$NON-NLS-1$
-        "11*101"//$NON-NLS-1$
-    );
-
-    System.out.print("Training: "); //$NON-NLS-1$
-    final int f1 = WModel_Boolean.f_training_cases(x_after_multi_obj[0],
-        cases);
-    final int f2 = WModel_Boolean.f_training_cases(x_after_multi_obj[1],
-        cases);
+    System.out.print("Objective: "); //$NON-NLS-1$
+    final int f1 = WModel_Boolean.f(x_after_multi_obj[0],
+        x_after_multi_obj[0].length);
+    final int f2 = WModel_Boolean.f(x_after_multi_obj[1],
+        x_after_multi_obj[0].length);
     System.out.print(f1);
     System.out.print(" / "); //$NON-NLS-1$
     System.out.println(f2);
 
-    final int[] ruggedness = WModel_TrainingCases.ruggedness(34, cases);
+    final int gamma = 12;
+    final int gammaPrime = WModel_Ruggedness.ruggedness_translate(gamma,
+        x_after_multi_obj[0].length);
+    System.out.print("Gamma: "); //$NON-NLS-1$
+    System.out.print(gamma);
+    System.out.print(" / Gamma': "); //$NON-NLS-1$
+    System.out.println(gammaPrime);
+
+    final int[] ruggedness = WModel_Ruggedness.ruggedness(gamma,
+        x_after_multi_obj[0].length);
     System.out.print("Ruggedness: "); //$NON-NLS-1$
     System.out.print(ruggedness[f1]);
     System.out.print(" / "); //$NON-NLS-1$

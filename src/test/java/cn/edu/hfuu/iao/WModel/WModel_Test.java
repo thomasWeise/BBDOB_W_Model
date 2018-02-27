@@ -125,9 +125,19 @@ public abstract class WModel_Test<T> extends _Internal_Base {
    * the paper
    */
   @Test(timeout = 3600000)
-  public void neutrality_paper_example_mu_2() {
+  public void neutrality_paper_example_old_mu_2() {
     this.test_neutrality("010001100000111010000", //$NON-NLS-1$
         2, "1011001110");//$NON-NLS-1$
+  }
+
+  /**
+   * test whether the neutrality mapping correctly manages the example from
+   * the paper
+   */
+  @Test(timeout = 3600000)
+  public void neutrality_paper_example_new_mu_2() {
+    this.test_neutrality("010101100000111010000", //$NON-NLS-1$
+        2, "1111001110");//$NON-NLS-1$
   }
 
   /**
@@ -160,10 +170,10 @@ public abstract class WModel_Test<T> extends _Internal_Base {
 
   /**
    * test whether the epistasis transformation represents the first batch
-   * of examples from the paper correctly
+   * of examples from the old paper correctly
    */
   @Test(timeout = 3600000)
-  public void epistasis_paper_example_eta_4() {
+  public void epistasis_paper_example_eta_4_old() {
     this.test_epistasis("0000", 4, "0000"); //$NON-NLS-1$ //$NON-NLS-2$
     this.test_epistasis("0001", 4, "1101"); //$NON-NLS-1$ //$NON-NLS-2$
     this.test_epistasis("0010", 4, "1011"); //$NON-NLS-1$ //$NON-NLS-2$
@@ -187,9 +197,19 @@ public abstract class WModel_Test<T> extends _Internal_Base {
    * set of examples from the paper
    */
   @Test(timeout = 3600000)
-  public void epistasis_paper_big_example_eta_4() {
+  public void epistasis_paper_big_example_eta_4_old() {
     this.test_epistasis("1011001110", 4, //$NON-NLS-1$
         "1001011011");//$NON-NLS-1$
+  }
+
+  /**
+   * test whether the epistasis transformation correctly manages the second
+   * set of examples from the paper
+   */
+  @Test(timeout = 3600000)
+  public void epistasis_paper_big_example_eta_4_new() {
+    this.test_epistasis("1111001110", 4, //$NON-NLS-1$
+        "1110011011");//$NON-NLS-1$
   }
 
   /**
@@ -328,6 +348,16 @@ public abstract class WModel_Test<T> extends _Internal_Base {
     this.test_f("01010101010", 10, 0); //$NON-NLS-1$
     this.test_f("010101010101", 11, 0); //$NON-NLS-1$
     this.test_f("0101010101010", 12, 0); //$NON-NLS-1$
+  }
+
+  /**
+   * test the objective function returns correct results for the paper
+   * examples
+   */
+  @Test(timeout = 3600000)
+  public void f_paper_example() {
+    this.test_f("110110", 6, 3); //$NON-NLS-1$
+    this.test_f("101010", 6, 6); //$NON-NLS-1$
   }
 
   /**
@@ -592,10 +622,18 @@ public abstract class WModel_Test<T> extends _Internal_Base {
 
   /** check the paper example for {@code m=2} */
   @Test(timeout = 3600000)
-  public void multiple_objectives_paper_example_m_2() {
+  public void multiple_objectives_paper_example_m_2_old() {
     this.test_multiple_objectives("1001011011", 6, //$NON-NLS-1$
         "100110", //$NON-NLS-1$
         "011010");//$NON-NLS-1$
+  }
+
+  /** check the paper example for {@code m=2} */
+  @Test(timeout = 3600000)
+  public void multiple_objectives_paper_example_m_2_new() {
+    this.test_multiple_objectives("1110011011", 6, //$NON-NLS-1$
+        "110110", //$NON-NLS-1$
+        "101010");//$NON-NLS-1$
   }
 
   /**
@@ -628,7 +666,7 @@ public abstract class WModel_Test<T> extends _Internal_Base {
 
   /** check the paper example for training cases */
   @Test(timeout = 3600000)
-  public void training_cases_paper_example_old() {
+  public void training_cases_example_old() {
     final long[] cases = WModel_TrainingCases.fromString(//
         "*10001", //$NON-NLS-1$
         "0101*0", //$NON-NLS-1$
@@ -643,7 +681,7 @@ public abstract class WModel_Test<T> extends _Internal_Base {
 
   /** check the paper example for training cases */
   @Test(timeout = 3600000)
-  public void training_cases_paper_example_new() {
+  public void training_cases_example_new() {
     final long[] cases = WModel_TrainingCases.fromString(//
         "*10001", //$NON-NLS-1$
         "0101*0", //$NON-NLS-1$

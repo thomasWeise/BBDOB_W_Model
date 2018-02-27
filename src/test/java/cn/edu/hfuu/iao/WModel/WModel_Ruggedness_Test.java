@@ -8,9 +8,25 @@ public class WModel_Ruggedness_Test extends _Internal_Base {
   /** test the paper example 1 */
   @SuppressWarnings("static-method")
   @Test(timeout = 3600000)
-  public void ruggedness_transform_paper_example_gammap_34_q_25() {
+  public void ruggedness_transform_paper_example_gammap_34_q_25_old() {
     Assert.assertEquals(57,
         WModel_Ruggedness.ruggedness_translate(34, 25));
+  }
+
+  /** test the paper example 1 */
+  @SuppressWarnings("static-method")
+  @Test(timeout = 3600000)
+  public void ruggedness_transform_paper_example_gammap_12_q_6_new() {
+    Assert.assertEquals(9, WModel_Ruggedness.ruggedness_translate(12, 6));
+  }
+
+  /** test the paper example 1 */
+  @SuppressWarnings("static-method")
+  @Test(timeout = 3600000)
+  public void ruggedness_transform_paper_example_gamma_12_q_6_new() {
+    final int[] r = WModel_Ruggedness.ruggedness(12, 6);
+    Assert.assertEquals(3, r[3]);
+    Assert.assertEquals(5, r[6]);
   }
 
   /** test the paper example 2 */
