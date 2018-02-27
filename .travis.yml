@@ -1,0 +1,17 @@
+##
+## Build with Travis.CI
+##
+#
+language: java
+
+jdk:
+  - oraclejdk8
+  - oraclejdk9
+  - openjdk8
+  
+dist: trusty
+    
+# Cache Maven dependencies to speed up builds.
+cache:
+  directories:
+  - $HOME/.m2
