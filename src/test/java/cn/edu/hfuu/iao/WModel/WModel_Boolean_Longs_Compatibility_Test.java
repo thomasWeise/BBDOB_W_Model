@@ -141,4 +141,22 @@ public class WModel_Boolean_Longs_Compatibility_Test
       final long[] training) {
     return WModel_Longs.f_training_cases(in, training);
   }
+
+  /** {@inheritDoc} */
+  @Override
+  protected final boolean[] compute_permutate1(final boolean[] in,
+      final int[] permutation) {
+    final boolean[] res = new boolean[in.length];
+    WModel_Boolean.permutate(in, permutation, res);
+    return res;
+  }
+
+  /** {@inheritDoc} */
+  @Override
+  protected final Solution compute_permutate2(final Solution in,
+      final int[] permutation) {
+    final Solution res = new Solution(in.size());
+    WModel_Longs.permutate(in, permutation, res);
+    return res;
+  }
 }

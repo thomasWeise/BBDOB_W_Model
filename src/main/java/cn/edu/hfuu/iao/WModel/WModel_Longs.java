@@ -4,7 +4,13 @@ import java.util.Arrays;
 
 /**
  * Here we implement the {@code W model} for the
- * {@code long[]}-representations of candidate solutions.
+ * {@code long[]}-representations of candidate solutions. This
+ * representation is more compact than the {@linkplain WModel_Boolean
+ * boolean representation}, as it can store 64 bits in one {@code long} of
+ * its internal array. However, it may also be slower due to the overhead
+ * of using methods when accessing the bits. Generally, having both a
+ * boolean and a long-based representation allows us to exercise unit tests
+ * for representation compatibility.
  */
 public final class WModel_Longs {
 
@@ -334,6 +340,31 @@ public final class WModel_Longs {
       }
       System.arraycopy(other.m_data, 0, this.m_data, 0,
           this.m_data.length);
+    }
+  }
+
+  /**
+   * Mix the the decision variables in a bit string {@code xIn} based on
+   * the provided
+   * {@link WModel_Permutation#permutation(int, int, java.util.Random)
+   * permutation}. This transformation could be applied before the
+   * neutrality transformation in order to make the problems harder for
+   * solvers that use the variable sequence information. It should not make
+   * the problem harder for solvers that do not.
+   *
+   * @param xIn
+   *          the input bit string
+   * @param permutation
+   *          the permutation
+   * @param xOut
+   *          the output bit string
+   * @see WModel_Permutation#permutation(int, int, java.util.Random)
+   */
+  public static final void permutate(final Solution xIn,
+      final int[] permutation, final Solution xOut) {
+    int j = (-1);
+    for (final int i : permutation) {
+      xOut.set(i, xIn.get(++j));
     }
   }
 }

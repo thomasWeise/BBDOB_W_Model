@@ -28,10 +28,7 @@ public class WModel_TrainingCases {
    */
   public static final long[] training_cases_create(final int n,
       final int epsilon, final int o, final int t, final Random random) {
-    final int[] perm = new int[n];
-    for (int i = n; (--i) >= 0;) {
-      perm[i] = i;
-    }
+    final int[] perm = WModel_Permutation.canonical(n);
 
     // create the raw training cases
     final int[] ones = new int[n];
@@ -45,18 +42,12 @@ public class WModel_TrainingCases {
     }
 
     // now modify them
-    final int nm2 = n - 2;
     for (int caze = t; (--caze) >= 0;) {
 
       // first shuffle perm
       // by using the values of perm in sequence, we create non-repeating,
       // uniformly random indices
-      for (int i = 0; i <= nm2; i++) {
-        final int j = (i + random.nextInt(n - i));
-        final int temp = perm[i];
-        perm[i] = perm[j];
-        perm[j] = temp;
-      }
+      WModel_Permutation.shuffle(perm, random);
 
       int z = 0;
       // add don't care

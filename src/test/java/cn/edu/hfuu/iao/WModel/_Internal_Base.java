@@ -1,5 +1,6 @@
 package cn.edu.hfuu.iao.WModel;
 
+import java.util.concurrent.ThreadLocalRandom;
 import java.util.function.Consumer;
 
 import org.junit.Ignore;
@@ -87,5 +88,23 @@ abstract class _Internal_Base {
       }
       consumer.accept(bits);
     }
+  }
+
+  /**
+   * get a random string
+   *
+   * @param n
+   *          the length
+   * @param random
+   *          the random number generator
+   * @return the string
+   */
+  static final String _random(final int n,
+      final ThreadLocalRandom random) {
+    final char[] text = new char[n];
+    for (int i = text.length; (--i) >= 0;) {
+      text[i] = _Internal_Base._bit(random.nextBoolean());
+    }
+    return String.valueOf(text);
   }
 }

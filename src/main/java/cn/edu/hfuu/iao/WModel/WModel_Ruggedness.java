@@ -15,7 +15,8 @@ public final class WModel_Ruggedness {
    * @param gamma
    *          the gamma value
    * @param q
-   *          the q value
+   *          the maximum possible objective value (equivalent to {@code n}
+   *          if no training-case based evaluation is applied)
    * @return the permutation
    */
   public static int[] ruggedness_raw(final int gamma, final int q) {
@@ -58,7 +59,8 @@ public final class WModel_Ruggedness {
    * @param gamma
    *          the value of gamma'
    * @param q
-   *          the maximum objective value
+   *          the maximum possible objective value (equivalent to {@code n}
+   *          if no training-case based evaluation is applied)
    * @return the return value
    */
   public static final int ruggedness_translate(final int gamma,
@@ -95,7 +97,8 @@ public final class WModel_Ruggedness {
    * @param gamma
    *          the gamma prime value
    * @param q
-   *          the q value
+   *          the maximum possible objective value (equivalent to {@code n}
+   *          if no training-case based evaluation is applied)
    * @return the permutation
    */
   public static final int[] ruggedness(final int gamma, final int q) {

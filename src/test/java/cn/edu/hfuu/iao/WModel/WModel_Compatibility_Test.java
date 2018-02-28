@@ -1,6 +1,7 @@
 package cn.edu.hfuu.iao.WModel;
 
 import java.util.HashSet;
+import java.util.concurrent.ThreadLocalRandom;
 
 import org.junit.Assert;
 import org.junit.Ignore;
@@ -702,4 +703,47 @@ public abstract class WModel_Compatibility_Test<T1, T2>
     this.test_training_cases("011010", cases, 16);//$NON-NLS-1$
   }
 
+  /**
+   * compute a permutation
+   *
+   * @param in
+   *          the input solution
+   * @param permutation
+   *          the permutation
+   * @return the permutated result
+   */
+  protected abstract T1 compute_permutate1(final T1 in,
+      final int[] permutation);
+
+  /**
+   * compute a permutation
+   *
+   * @param in
+   *          the input solution
+   * @param permutation
+   *          the permutation
+   * @return the permutated result
+   */
+  protected abstract T2 compute_permutate2(final T2 in,
+      final int[] permutation);
+
+  /** check compatibility on many random permutations */
+  @Test(timeout = 3600000)
+  public void random_permutations() {
+    final ThreadLocalRandom random = ThreadLocalRandom.current();
+    for (int samples = _Internal_Base.FAST_TESTS ? 300_000
+        : 2_000_000; (--samples) >= 0;) {
+      final int n = random.nextInt(1, 200);
+      final int c = random.nextInt(1, n + 1);
+      final int[] perm = WModel_Permutation.permutation(n, c, random);
+      final String x = _Internal_Base._random(n, random);
+      final T1 x1 = this.fromString1(x);
+      final T2 x2 = this.fromString2(x);
+      this.assertEqual(x1, x2);
+      final T1 y1 = this.compute_permutate1(x1, perm);
+      final T2 y2 = this.compute_permutate2(x2, perm);
+      this.assertEqual(y1, y2);
+      Assert.assertEquals(this.toString1(y1), this.toString2(y2));
+    }
+  }
 }

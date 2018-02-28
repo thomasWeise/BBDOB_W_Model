@@ -80,4 +80,13 @@ public class WModel_Longs_Test extends WModel_Test<WModel_Longs.Solution> {
       final long[] training) {
     return WModel_Longs.f_training_cases(in, training);
   }
+
+  /** {@inheritDoc} */
+  @Override
+  protected final Solution compute_permutate(final Solution in,
+      final int[] permutation) {
+    final Solution result = new Solution(in.size());
+    WModel_Longs.permutate(in, permutation, result);
+    return result;
+  }
 }

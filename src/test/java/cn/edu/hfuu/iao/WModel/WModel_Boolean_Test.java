@@ -80,4 +80,13 @@ public class WModel_Boolean_Test extends WModel_Test<boolean[]> {
       final long[] training) {
     return WModel_Boolean.f_training_cases(in, training);
   }
+
+  /** {@inheritDoc} */
+  @Override
+  protected final boolean[] compute_permutate(final boolean[] in,
+      final int[] permutation) {
+    final boolean[] result = new boolean[in.length];
+    WModel_Boolean.permutate(in, permutation, result);
+    return result;
+  }
 }

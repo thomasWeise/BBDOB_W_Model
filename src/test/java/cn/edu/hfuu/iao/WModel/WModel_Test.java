@@ -1,6 +1,7 @@
 package cn.edu.hfuu.iao.WModel;
 
 import java.util.HashSet;
+import java.util.concurrent.ThreadLocalRandom;
 
 import org.junit.Assert;
 import org.junit.Ignore;
@@ -694,4 +695,76 @@ public abstract class WModel_Test<T> extends _Internal_Base {
     this.test_training_cases("011010", cases, 16);//$NON-NLS-1$
   }
 
+  /**
+   * compute a permutation
+   *
+   * @param in
+   *          the input solution
+   * @param permutation
+   *          the permutation
+   * @return the permutated result
+   */
+  protected abstract T compute_permutate(final T in,
+      final int[] permutation);
+
+  /**
+   * test a permutation
+   *
+   * @param in
+   *          the input solution
+   * @param permutation
+   *          the permutation
+   * @param out
+   *          the expected output solution
+   */
+  protected final void test_permutation(final String in,
+      final int[] permutation, final String out) {
+    Assert.assertEquals(out, this.toString(
+        this.compute_permutate(this.fromString(in), permutation)));
+  }
+
+  /** test some fixed permutation examples */
+  @Test(timeout = 3600000)
+  public void permutation_examples() {
+    this.test_permutation("01010", //$NON-NLS-1$
+        WModel_Permutation.fromString("0,1,3,2,4"), //$NON-NLS-1$
+        "01100"); //$NON-NLS-1$
+
+    this.test_permutation("10011", //$NON-NLS-1$
+        WModel_Permutation.fromString("4,3,2,1,0"), //$NON-NLS-1$
+        "11001"); //$NON-NLS-1$
+  }
+
+  /**
+   * test the given permutation exhaustively
+   *
+   * @param n
+   *          the length
+   */
+  private final void __test_permutation_exhaustively(final int n) {
+    for (int c = 1; c <= n; c++) {
+      for (int samples = 30; (--samples) >= 0;) {
+        final int[] perm = WModel_Permutation.permutation(n, c,
+            ThreadLocalRandom.current());
+
+        _Internal_Base._exhaustive_iteration(perm.length, (text) -> {
+          final String result = this.toString(this.compute_permutate(
+              this.fromString(String.valueOf(text)), perm));
+          int i = (-1);
+          for (final char ch : text) {
+            Assert.assertEquals(ch, result.charAt(perm[++i]));
+          }
+        });
+      }
+    }
+  }
+
+  /** test permutations exhaustively */
+  @Test(timeout = 3600000)
+  public void permutation_exhaustive() {
+    final int maxN = _Internal_Base.FAST_TESTS ? 16 : 18;
+    for (int n = 1; n < maxN; n++) {
+      this.__test_permutation_exhaustively(n);
+    }
+  }
 }

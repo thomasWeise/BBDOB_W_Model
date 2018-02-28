@@ -196,4 +196,29 @@ public final class WModel_Boolean {
     }
     return sum;
   }
+
+  /**
+   * Mix the the decision variables in a bit string {@code xIn} based on
+   * the provided
+   * {@link WModel_Permutation#permutation(int, int, java.util.Random)
+   * permutation}. This transformation could be applied before the
+   * neutrality transformation in order to make the problems harder for
+   * solvers that use the variable sequence information. It should not make
+   * the problem harder for solvers that do not.
+   *
+   * @param xIn
+   *          the input bit string
+   * @param permutation
+   *          the permutation
+   * @param xOut
+   *          the output bit string
+   * @see WModel_Permutation#permutation(int, int, java.util.Random)
+   */
+  public static final void permutate(final boolean[] xIn,
+      final int[] permutation, final boolean[] xOut) {
+    int j = (-1);
+    for (final int i : permutation) {
+      xOut[i] = xIn[++j];
+    }
+  }
 }
