@@ -134,7 +134,7 @@ public abstract class WModel_Test<T> extends _Internal_Base {
     final char[] real = new char[_n];
     _Internal_Base._exhaustive_iteration(_n * _mu, (text) -> {
 
-      final int threshold = (_mu >>> 1) | (_mu & 1);
+      final int threshold = (_mu >>> 1) + (_mu & 1);
       int offset = text.length;
       for (int i = _n; (--i) >= 0;) {
         int ones = 0;
