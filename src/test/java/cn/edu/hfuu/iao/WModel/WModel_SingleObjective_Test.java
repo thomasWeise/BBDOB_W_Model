@@ -71,153 +71,910 @@ public abstract class WModel_SingleObjective_Test<T>
     if (_mu == 1) {
       Assert.assertEquals(1L, counter[0]);
     } else {
-      final int ones = (_n >>> 1);
-      final int zeros = (_n - ones);
-      final int majority = 1 + (_mu >>> 1);
 
-      boolean tooBig = false;
-      long valuesPerZero = 0;
-      for (int i = majority; i <= _mu; i++) {
-        valuesPerZero += WModel_SingleObjective_Test.__n_over_k(_mu, i);
-        if (valuesPerZero < 1L) {
-          tooBig = true;
-        }
-      }
+      long times = -1L;
+      if (_nu <= 2) {
+        final int ones = (_n >>> 1);
+        final int zeros = (_n - ones);
 
-      final long valuesPerOne = (1L << _mu) - valuesPerZero;
-      if (valuesPerOne <= 1L) {
-        tooBig = true;
-      }
-      long total = 1L;
-      for (int i = zeros; (--i) >= 0;) {
-        total *= valuesPerZero;
-        if (total <= 0L) {
-          tooBig = true;
-          break;
-        }
-      }
-      for (int i = ones; (--i) >= 0;) {
-        total *= valuesPerOne;
-        if (total <= 0L) {
-          tooBig = true;
-          break;
-        }
-      }
-      if (tooBig) {
-        Assert.assertTrue(counter[0] >= Long.MAX_VALUE);
+        times = WModel_SingleObjective_Test.__number(zeros, ones, _mu);
       } else {
-        Assert.assertEquals(total, counter[0]);
+        times = (-1L);
+      }
+
+      if (times <= 0L) {
+        Assert.assertTrue(counter[0] >= 1);
+      } else {
+        if (times >= Long.MAX_VALUE) {
+          Assert.assertTrue(counter[0] >= Long.MAX_VALUE);
+        } else {
+          Assert.assertEquals(times, counter[0]);
+        }
+      }
+    }
+  }
+
+  /**
+   * compute the number of times a string with the given number of zeros
+   * and ones can appear if the specified redundancy is applied
+   *
+   * @param zeros
+   *          the zeros
+   * @param ones
+   *          the ones
+   * @param mu
+   *          the mu
+   * @return the number of times, or Long.MAX_VALUE if too big
+   */
+  private static final long __number(final int zeros, final int ones,
+      final int mu) {
+    final int majority = 1 + (mu >>> 1);
+
+    long valuesPerZero = 0;
+    for (int i = majority; i <= mu; i++) {
+      valuesPerZero += WModel_SingleObjective_Test.__n_over_k(mu, i);
+      if (valuesPerZero < 1L) {
+        return Long.MAX_VALUE;
       }
     }
 
+    final long valuesPerOne = (1L << mu) - valuesPerZero;
+    if (valuesPerOne < 1L) {
+      return Long.MAX_VALUE;
+    }
+    long total = 1L;
+    for (int i = zeros; (--i) >= 0;) {
+      total *= valuesPerZero;
+      if (total <= 0L) {
+        return Long.MAX_VALUE;
+      }
+    }
+    for (int i = ones; (--i) >= 0;) {
+      total *= valuesPerOne;
+      if (total <= 0L) {
+        return Long.MAX_VALUE;
+      }
+    }
+
+    return total;
   }
 
-  /** test permutations exhaustively */
+  /** test a specific setting */
   @Test(timeout = 3600000)
   public void test_exhaustive_n10_mu1_nu2_gamma0() {
-    this.__test_exhaustive_enumeration(10, 1, 2, 0);
+    final int n = 10;
+    final int mu = 1;
+    final int nu = 2;
+    final int gamma = 0;
+    this.__test_exhaustive_enumeration(n, mu, nu, gamma);
   }
 
-  /** test permutations exhaustively */
+  /** test a specific setting */
   @Test(timeout = 3600000)
   public void test_exhaustive_n17_mu1_nu2_gamma0() {
-    this.__test_exhaustive_enumeration(17, 1, 2, 0);
+    final int n = 17;
+    final int mu = 1;
+    final int nu = 2;
+    final int gamma = 0;
+    this.__test_exhaustive_enumeration(n, mu, nu, gamma);
   }
 
-  /** test permutations exhaustively */
+  /** test a specific setting */
   @Test(timeout = 3600000)
   public void test_exhaustive_n20_mu1_nu2_gamma0() {
-    this.__test_exhaustive_enumeration(20, 1, 2, 0);
+    final int n = 20;
+    final int mu = 1;
+    final int nu = 2;
+    final int gamma = 0;
+    this.__test_exhaustive_enumeration(n, mu, nu, gamma);
   }
 
-  /** test permutations exhaustively */
+  /** test a specific setting */
   @Test(timeout = 3600000)
   public void test_exhaustive_n12_mu2_nu2_gamma0() {
-    this.__test_exhaustive_enumeration(12, 2, 2, 0);
+    if (_Internal_Base.FAST_TESTS) {
+      return;
+    }
+    final int n = 12;
+    final int mu = 2;
+    final int nu = 2;
+    final int gamma = 0;
+    this.__test_exhaustive_enumeration(n, mu, nu, gamma);
   }
 
-  /** test permutations exhaustively */
+  /** test a specific setting */
   @Test(timeout = 3600000)
-  public void test_exhaustive_n10_mu2_nu2_gamma0() {
-    this.__test_exhaustive_enumeration(10, 2, 2, 0);
+  public void test_exhaustive_n7_mu2_nu2_gamma0() {
+    final int n = 7;
+    final int mu = 2;
+    final int nu = 2;
+    final int gamma = 0;
+    this.__test_exhaustive_enumeration(n, mu, nu, gamma);
   }
 
-  /** test permutations exhaustively */
-  @Test(timeout = 3600000)
-  public void test_exhaustive_n5_mu2_nu2_gamma0() {
-    this.__test_exhaustive_enumeration(5, 2, 2, 0);
-  }
-
-  /** test permutations exhaustively */
-  @Test(timeout = 3600000)
-  public void test_exhaustive_n2_mu2_nu2_gamma0() {
-    this.__test_exhaustive_enumeration(2, 2, 2, 0);
-  }
-
-  /** test permutations exhaustively */
-  @Test(timeout = 3600000)
-  public void test_exhaustive_n3_mu2_nu2_gamma0() {
-    this.__test_exhaustive_enumeration(3, 2, 2, 0);
-  }
-
-  /** test permutations exhaustively */
-  @Test(timeout = 3600000)
-  public void test_exhaustive_n4_mu2_nu2_gamma0() {
-    this.__test_exhaustive_enumeration(4, 2, 2, 0);
-  }
-
-  /** test permutations exhaustively */
+  /** test a specific setting */
   @Test(timeout = 3600000)
   public void test_exhaustive_n6_mu2_nu2_gamma0() {
-    this.__test_exhaustive_enumeration(6, 2, 2, 0);
+    final int n = 6;
+    final int mu = 2;
+    final int nu = 2;
+    final int gamma = 0;
+    this.__test_exhaustive_enumeration(n, mu, nu, gamma);
   }
 
-  /** test permutations exhaustively */
+  /** test a specific setting */
+  @Test(timeout = 3600000)
+  public void test_exhaustive_n10_mu2_nu2_gamma0() {
+    final int n = 10;
+    final int mu = 2;
+    final int nu = 2;
+    final int gamma = 0;
+    this.__test_exhaustive_enumeration(n, mu, nu, gamma);
+  }
+
+  /** test a specific setting */
+  @Test(timeout = 3600000)
+  public void test_exhaustive_n5_mu2_nu2_gamma0() {
+    final int n = 5;
+    final int mu = 2;
+    final int nu = 2;
+    final int gamma = 0;
+    this.__test_exhaustive_enumeration(n, mu, nu, gamma);
+  }
+
+  /** test a specific setting */
+  @Test(timeout = 3600000)
+  public void test_exhaustive_n2_mu2_nu2_gamma0() {
+    final int n = 2;
+    final int mu = 2;
+    final int nu = 2;
+    final int gamma = 0;
+    this.__test_exhaustive_enumeration(n, mu, nu, gamma);
+  }
+
+  /** test a specific setting */
+  @Test(timeout = 3600000)
+  public void test_exhaustive_n3_mu2_nu2_gamma0() {
+    final int n = 3;
+    final int mu = 2;
+    final int nu = 2;
+    final int gamma = 0;
+    this.__test_exhaustive_enumeration(n, mu, nu, gamma);
+  }
+
+  /** test a specific setting */
+  @Test(timeout = 3600000)
+  public void test_exhaustive_n4_mu2_nu2_gamma0() {
+    final int n = 4;
+    final int mu = 2;
+    final int nu = 2;
+    final int gamma = 0;
+    this.__test_exhaustive_enumeration(n, mu, nu, gamma);
+  }
+
+  /** test a specific setting */
+  @Test(timeout = 3600000)
+  public void test_exhaustive_n6_mu2_nu2_gamma3() {
+    final int n = 6;
+    final int mu = 2;
+    final int nu = 2;
+    final int gamma = 3;
+    this.__test_exhaustive_enumeration(n, mu, nu, gamma);
+  }
+
+  /** test a specific setting */
   @Test(timeout = 3600000)
   public void test_exhaustive_n5_mu3_nu2_gamma0() {
-    this.__test_exhaustive_enumeration(5, 2, 2, 0);
+    final int n = 5;
+    final int mu = 3;
+    final int nu = 2;
+    final int gamma = 0;
+    this.__test_exhaustive_enumeration(n, mu, nu, gamma);
   }
 
-  /** test permutations exhaustively */
+  /** test a specific setting */
   @Test(timeout = 3600000)
   public void test_exhaustive_n2_mu3_nu2_gamma0() {
-    this.__test_exhaustive_enumeration(2, 3, 2, 0);
+    final int n = 2;
+    final int mu = 3;
+    final int nu = 2;
+    final int gamma = 0;
+    this.__test_exhaustive_enumeration(n, mu, nu, gamma);
   }
 
-  /** test permutations exhaustively */
+  /** test a specific setting */
   @Test(timeout = 3600000)
   public void test_exhaustive_n3_mu3_nu2_gamma0() {
-    this.__test_exhaustive_enumeration(3, 3, 2, 0);
+    final int n = 3;
+    final int mu = 3;
+    final int nu = 2;
+    final int gamma = 0;
+    this.__test_exhaustive_enumeration(n, mu, nu, gamma);
   }
 
-  /** test permutations exhaustively */
+  /** test a specific setting */
   @Test(timeout = 3600000)
   public void test_exhaustive_n4_mu3_nu2_gamma0() {
-    this.__test_exhaustive_enumeration(4, 3, 2, 0);
+    final int n = 4;
+    final int mu = 3;
+    final int nu = 2;
+    final int gamma = 0;
+    this.__test_exhaustive_enumeration(n, mu, nu, gamma);
   }
 
-  /** test permutations exhaustively */
+  /** test a specific setting */
   @Test(timeout = 3600000)
   public void test_exhaustive_n6_mu3_nu2_gamma0() {
-    this.__test_exhaustive_enumeration(6, 3, 2, 0);
+    final int n = 6;
+    final int mu = 3;
+    final int nu = 2;
+    final int gamma = 0;
+    this.__test_exhaustive_enumeration(n, mu, nu, gamma);
   }
 
-  /** test permutations exhaustively */
+  /** test a specific setting */
   @Test(timeout = 3600000)
   public void test_exhaustive_n20_mu1_nu2_gamma10() {
-    this.__test_exhaustive_enumeration(20, 1, 2, 10);
+    final int n = 20;
+    final int mu = 1;
+    final int nu = 2;
+    final int gamma = 10;
+    this.__test_exhaustive_enumeration(n, mu, nu, gamma);
   }
 
-  /** test permutations exhaustively */
+  /** test a specific setting */
   @Test(timeout = 3600000)
   public void test_exhaustive_n17_mu1_nu2_gamma10() {
-    this.__test_exhaustive_enumeration(17, 1, 2, 10);
+    final int n = 17;
+    final int mu = 1;
+    final int nu = 2;
+    final int gamma = 10;
+    this.__test_exhaustive_enumeration(n, mu, nu, gamma);
   }
 
-  /** test permutations exhaustively */
+  /** test a specific setting */
   @Test(timeout = 3600000)
   public void test_exhaustive_n10_mu1_nu2_gamma10() {
-    this.__test_exhaustive_enumeration(10, 1, 2, 10);
+    final int n = 10;
+    final int mu = 1;
+    final int nu = 2;
+    final int gamma = 10;
+    this.__test_exhaustive_enumeration(n, mu, nu, gamma);
+  }
+
+  /** test a specific setting */
+  @Test(timeout = 3600000)
+  public void test_exhaustive_n10_mu1_nu3_gamma0() {
+    final int n = 10;
+    final int mu = 1;
+    final int nu = 3;
+    final int gamma = 0;
+    this.__test_exhaustive_enumeration(n, mu, nu, gamma);
+  }
+
+  /** test a specific setting */
+  @Test(timeout = 3600000)
+  public void test_exhaustive_n17_mu1_nu3_gamma0() {
+    final int n = 17;
+    final int mu = 1;
+    final int nu = 3;
+    final int gamma = 0;
+    this.__test_exhaustive_enumeration(n, mu, nu, gamma);
+  }
+
+  /** test a specific setting */
+  @Test(timeout = 3600000)
+  public void test_exhaustive_n20_mu1_nu3_gamma0() {
+    final int n = 20;
+    final int mu = 1;
+    final int nu = 3;
+    final int gamma = 0;
+    this.__test_exhaustive_enumeration(n, mu, nu, gamma);
+  }
+
+  /** test a specific setting */
+  @Test(timeout = 3600000)
+  public void test_exhaustive_n12_mu2_nu3_gamma0() {
+    if (_Internal_Base.FAST_TESTS) {
+      return;
+    }
+    final int n = 12;
+    final int mu = 2;
+    final int nu = 3;
+    final int gamma = 0;
+    this.__test_exhaustive_enumeration(n, mu, nu, gamma);
+  }
+
+  /** test a specific setting */
+  @Test(timeout = 3600000)
+  public void test_exhaustive_n9_mu2_nu3_gamma0() {
+    final int n = 9;
+    final int mu = 2;
+    final int nu = 3;
+    final int gamma = 0;
+    this.__test_exhaustive_enumeration(n, mu, nu, gamma);
+  }
+
+  /** test a specific setting */
+  @Test(timeout = 3600000)
+  public void test_exhaustive_n7_mu2_nu3_gamma0() {
+    final int n = 7;
+    final int mu = 2;
+    final int nu = 3;
+    final int gamma = 0;
+    this.__test_exhaustive_enumeration(n, mu, nu, gamma);
+  }
+
+  /** test a specific setting */
+  @Test(timeout = 3600000)
+  public void test_exhaustive_n10_mu2_nu3_gamma0() {
+    final int n = 10;
+    final int mu = 2;
+    final int nu = 3;
+    final int gamma = 0;
+    this.__test_exhaustive_enumeration(n, mu, nu, gamma);
+  }
+
+  /** test a specific setting */
+  @Test(timeout = 3600000)
+  public void test_exhaustive_n5_mu2_nu3_gamma0() {
+    final int n = 5;
+    final int mu = 2;
+    final int nu = 3;
+    final int gamma = 0;
+    this.__test_exhaustive_enumeration(n, mu, nu, gamma);
+  }
+
+  /** test a specific setting */
+  @Test(timeout = 3600000)
+  public void test_exhaustive_n3_mu2_nu3_gamma0() {
+    final int n = 3;
+    final int mu = 2;
+    final int nu = 3;
+    final int gamma = 0;
+    this.__test_exhaustive_enumeration(n, mu, nu, gamma);
+  }
+
+  /** test a specific setting */
+  @Test(timeout = 3600000)
+  public void test_exhaustive_n4_mu2_nu3_gamma0() {
+    final int n = 4;
+    final int mu = 2;
+    final int nu = 3;
+    final int gamma = 0;
+    this.__test_exhaustive_enumeration(n, mu, nu, gamma);
+  }
+
+  /** test a specific setting */
+  @Test(timeout = 3600000)
+  public void test_exhaustive_n6_mu2_nu3_gamma0() {
+    final int n = 6;
+    final int mu = 2;
+    final int nu = 3;
+    final int gamma = 0;
+    this.__test_exhaustive_enumeration(n, mu, nu, gamma);
+  }
+
+  /** test a specific setting */
+  @Test(timeout = 3600000)
+  public void test_exhaustive_n5_mu3_nu3_gamma0() {
+    final int n = 5;
+    final int mu = 3;
+    final int nu = 3;
+    final int gamma = 0;
+    this.__test_exhaustive_enumeration(n, mu, nu, gamma);
+  }
+
+  /** test a specific setting */
+  @Test(timeout = 3600000)
+  public void test_exhaustive_n3_mu3_nu3_gamma0() {
+    final int n = 3;
+    final int mu = 3;
+    final int nu = 3;
+    final int gamma = 0;
+    this.__test_exhaustive_enumeration(n, mu, nu, gamma);
+  }
+
+  /** test a specific setting */
+  @Test(timeout = 3600000)
+  public void test_exhaustive_n4_mu3_nu3_gamma0() {
+    final int n = 4;
+    final int mu = 3;
+    final int nu = 3;
+    final int gamma = 0;
+    this.__test_exhaustive_enumeration(n, mu, nu, gamma);
+  }
+
+  /** test a specific setting */
+  @Test(timeout = 3600000)
+  public void test_exhaustive_n6_mu3_nu3_gamma0() {
+    final int n = 6;
+    final int mu = 3;
+    final int nu = 3;
+    final int gamma = 0;
+    this.__test_exhaustive_enumeration(n, mu, nu, gamma);
+  }
+
+  /** test a specific setting */
+  @Test(timeout = 3600000)
+  public void test_exhaustive_n20_mu1_nu3_gamma10() {
+    final int n = 20;
+    final int mu = 1;
+    final int nu = 3;
+    final int gamma = 10;
+    this.__test_exhaustive_enumeration(n, mu, nu, gamma);
+  }
+
+  /** test a specific setting */
+  @Test(timeout = 3600000)
+  public void test_exhaustive_n17_mu1_nu3_gamma10() {
+    final int n = 17;
+    final int mu = 1;
+    final int nu = 3;
+    final int gamma = 10;
+    this.__test_exhaustive_enumeration(n, mu, nu, gamma);
+  }
+
+  /** test a specific setting */
+  @Test(timeout = 3600000)
+  public void test_exhaustive_n10_mu1_nu3_gamma10() {
+    final int n = 10;
+    final int mu = 1;
+    final int nu = 3;
+    final int gamma = 10;
+    this.__test_exhaustive_enumeration(n, mu, nu, gamma);
+  }
+
+  /** test a specific setting */
+  @Test(timeout = 3600000)
+  public void test_exhaustive_n10_mu1_nu4_gamma0() {
+    final int n = 10;
+    final int mu = 1;
+    final int nu = 4;
+    final int gamma = 0;
+    this.__test_exhaustive_enumeration(n, mu, nu, gamma);
+  }
+
+  /** test a specific setting */
+  @Test(timeout = 3600000)
+  public void test_exhaustive_n17_mu1_nu4_gamma0() {
+    final int n = 17;
+    final int mu = 1;
+    final int nu = 4;
+    final int gamma = 0;
+    this.__test_exhaustive_enumeration(n, mu, nu, gamma);
+  }
+
+  /** test a specific setting */
+  @Test(timeout = 3600000)
+  public void test_exhaustive_n20_mu1_nu4_gamma0() {
+    final int n = 20;
+    final int mu = 1;
+    final int nu = 4;
+    final int gamma = 0;
+    this.__test_exhaustive_enumeration(n, mu, nu, gamma);
+  }
+
+  /** test a specific setting */
+  @Test(timeout = 3600000)
+  public void test_exhaustive_n12_mu2_nu4_gamma0() {
+    if (_Internal_Base.FAST_TESTS) {
+      return;
+    }
+    final int n = 12;
+    final int mu = 2;
+    final int nu = 4;
+    final int gamma = 0;
+    this.__test_exhaustive_enumeration(n, mu, nu, gamma);
+  }
+
+  /** test a specific setting */
+  @Test(timeout = 3600000)
+  public void test_exhaustive_n7_mu2_nu4_gamma0() {
+    final int n = 7;
+    final int mu = 2;
+    final int nu = 4;
+    final int gamma = 0;
+    this.__test_exhaustive_enumeration(n, mu, nu, gamma);
+  }
+
+  /** test a specific setting */
+  @Test(timeout = 3600000)
+  public void test_exhaustive_n8_mu2_nu4_gamma0() {
+    final int n = 8;
+    final int mu = 2;
+    final int nu = 4;
+    final int gamma = 0;
+    this.__test_exhaustive_enumeration(n, mu, nu, gamma);
+  }
+
+  /** test a specific setting */
+  @Test(timeout = 3600000)
+  public void test_exhaustive_n10_mu2_nu4_gamma0() {
+    final int n = 10;
+    final int mu = 2;
+    final int nu = 4;
+    final int gamma = 0;
+    this.__test_exhaustive_enumeration(n, mu, nu, gamma);
+  }
+
+  /** test a specific setting */
+  @Test(timeout = 3600000)
+  public void test_exhaustive_n5_mu2_nu4_gamma0() {
+    final int n = 5;
+    final int mu = 2;
+    final int nu = 4;
+    final int gamma = 0;
+    this.__test_exhaustive_enumeration(n, mu, nu, gamma);
+  }
+
+  /** test a specific setting */
+  @Test(timeout = 3600000)
+  public void test_exhaustive_n4_mu2_nu4_gamma0() {
+    final int n = 4;
+    final int mu = 2;
+    final int nu = 4;
+    final int gamma = 0;
+    this.__test_exhaustive_enumeration(n, mu, nu, gamma);
+  }
+
+  /** test a specific setting */
+  @Test(timeout = 3600000)
+  public void test_exhaustive_n6_mu2_nu4_gamma0() {
+    final int n = 6;
+    final int mu = 2;
+    final int nu = 4;
+    final int gamma = 0;
+    this.__test_exhaustive_enumeration(n, mu, nu, gamma);
+  }
+
+  /** test a specific setting */
+  @Test(timeout = 3600000)
+  public void test_exhaustive_n5_mu3_nu4_gamma0() {
+    final int n = 5;
+    final int mu = 3;
+    final int nu = 4;
+    final int gamma = 0;
+    this.__test_exhaustive_enumeration(n, mu, nu, gamma);
+  }
+
+  /** test a specific setting */
+  @Test(timeout = 3600000)
+  public void test_exhaustive_n4_mu3_nu4_gamma0() {
+    final int n = 4;
+    final int mu = 3;
+    final int nu = 4;
+    final int gamma = 0;
+    this.__test_exhaustive_enumeration(n, mu, nu, gamma);
+  }
+
+  /** test a specific setting */
+  @Test(timeout = 3600000)
+  public void test_exhaustive_n6_mu3_nu4_gamma0() {
+    final int n = 6;
+    final int mu = 3;
+    final int nu = 4;
+    final int gamma = 0;
+    this.__test_exhaustive_enumeration(n, mu, nu, gamma);
+  }
+
+  /** test a specific setting */
+  @Test(timeout = 3600000)
+  public void test_exhaustive_n20_mu1_nu4_gamma10() {
+    final int n = 20;
+    final int mu = 1;
+    final int nu = 4;
+    final int gamma = 10;
+    this.__test_exhaustive_enumeration(n, mu, nu, gamma);
+  }
+
+  /** test a specific setting */
+  @Test(timeout = 3600000)
+  public void test_exhaustive_n17_mu1_nu4_gamma10() {
+    final int n = 17;
+    final int mu = 1;
+    final int nu = 4;
+    final int gamma = 10;
+    this.__test_exhaustive_enumeration(n, mu, nu, gamma);
+  }
+
+  /** test a specific setting */
+  @Test(timeout = 3600000)
+  public void test_exhaustive_n10_mu1_nu4_gamma10() {
+    final int n = 10;
+    final int mu = 1;
+    final int nu = 4;
+    final int gamma = 10;
+    this.__test_exhaustive_enumeration(n, mu, nu, gamma);
+  }
+
+  /** test a specific setting */
+  @Test(timeout = 3600000)
+  public void test_exhaustive_n10_mu1_nu9_gamma0() {
+    final int n = 10;
+    final int mu = 1;
+    final int nu = 9;
+    final int gamma = 0;
+    this.__test_exhaustive_enumeration(n, mu, nu, gamma);
+  }
+
+  /** test a specific setting */
+  @Test(timeout = 3600000)
+  public void test_exhaustive_n17_mu1_nu9_gamma0() {
+    final int n = 17;
+    final int mu = 1;
+    final int nu = 9;
+    final int gamma = 0;
+    this.__test_exhaustive_enumeration(n, mu, nu, gamma);
+  }
+
+  /** test a specific setting */
+  @Test(timeout = 3600000)
+  public void test_exhaustive_n20_mu1_nu9_gamma0() {
+    final int n = 20;
+    final int mu = 1;
+    final int nu = 9;
+    final int gamma = 0;
+    this.__test_exhaustive_enumeration(n, mu, nu, gamma);
+  }
+
+  /** test a specific setting */
+  @Test(timeout = 3600000)
+  public void test_exhaustive_n12_mu2_nu9_gamma9() {
+    if (_Internal_Base.FAST_TESTS) {
+      return;
+    }
+    final int n = 12;
+    final int mu = 2;
+    final int nu = 3;
+    final int gamma = 9;
+    this.__test_exhaustive_enumeration(n, mu, nu, gamma);
+  }
+
+  /** test a specific setting */
+  @Test(timeout = 3600000)
+  public void test_exhaustive_n6_mu2_nu9_gamma9() {
+    final int n = 6;
+    final int mu = 2;
+    final int nu = 3;
+    final int gamma = 9;
+    this.__test_exhaustive_enumeration(n, mu, nu, gamma);
+  }
+
+  /** test a specific setting */
+  @Test(timeout = 3600000)
+  public void test_exhaustive_n7_mu2_nu9_gamma9() {
+    final int n = 7;
+    final int mu = 2;
+    final int nu = 3;
+    final int gamma = 9;
+    this.__test_exhaustive_enumeration(n, mu, nu, gamma);
+  }
+
+  /** test a specific setting */
+  @Test(timeout = 3600000)
+  public void test_exhaustive_n10_mu2_nu9_gamma0() {
+    final int n = 10;
+    final int mu = 2;
+    final int nu = 9;
+    final int gamma = 0;
+    this.__test_exhaustive_enumeration(n, mu, nu, gamma);
+  }
+
+  /** test a specific setting */
+  @Test(timeout = 3600000)
+  public void test_exhaustive_n20_mu1_nu9_gamma10() {
+    final int n = 20;
+    final int mu = 1;
+    final int nu = 9;
+    final int gamma = 10;
+    this.__test_exhaustive_enumeration(n, mu, nu, gamma);
+  }
+
+  /** test a specific setting */
+  @Test(timeout = 3600000)
+  public void test_exhaustive_n17_mu1_nu9_gamma10() {
+    final int n = 17;
+    final int mu = 1;
+    final int nu = 9;
+    final int gamma = 10;
+    this.__test_exhaustive_enumeration(n, mu, nu, gamma);
+  }
+
+  /** test a specific setting */
+  @Test(timeout = 3600000)
+  public void test_exhaustive_n10_mu1_nu9_gamma10() {
+    final int n = 10;
+    final int mu = 1;
+    final int nu = 9;
+    final int gamma = 10;
+    this.__test_exhaustive_enumeration(n, mu, nu, gamma);
+  }
+
+  /** test a specific setting */
+  @Test(timeout = 3600000)
+  public void test_exhaustive_n10_mu1_nu9_gamma_max() {
+    final int n = 10;
+    final int mu = 1;
+    final int nu = 9;
+    final int gamma = WModel_Ruggedness.max_gamma(n);
+    this.__test_exhaustive_enumeration(n, mu, nu, gamma);
+  }
+
+  /** test a specific setting */
+  @Test(timeout = 3600000)
+  public void test_exhaustive_n17_mu1_nu9_gamma_max() {
+    final int n = 17;
+    final int mu = 1;
+    final int nu = 9;
+    final int gamma = WModel_Ruggedness.max_gamma(n);
+    this.__test_exhaustive_enumeration(n, mu, nu, gamma);
+  }
+
+  /** test a specific setting */
+  @Test(timeout = 3600000)
+  public void test_exhaustive_n20_mu1_nu9_gamma_max() {
+    final int n = 20;
+    final int mu = 1;
+    final int nu = 9;
+    final int gamma = WModel_Ruggedness.max_gamma(n);
+    this.__test_exhaustive_enumeration(n, mu, nu, gamma);
+  }
+
+  /** test a specific setting */
+  @Test(timeout = 3600000)
+  public void test_exhaustive_n12_mu2_nu9_gamma_max() {
+    if (_Internal_Base.FAST_TESTS) {
+      return;
+    }
+    final int n = 12;
+    final int mu = 2;
+    final int nu = 9;
+    final int gamma = WModel_Ruggedness.max_gamma(n);
+    this.__test_exhaustive_enumeration(n, mu, nu, gamma);
+  }
+
+  /** test a specific setting */
+  @Test(timeout = 3600000)
+  public void test_exhaustive_n7_mu2_nu9_gamma_max() {
+    final int n = 7;
+    final int mu = 2;
+    final int nu = 9;
+    final int gamma = WModel_Ruggedness.max_gamma(n);
+    this.__test_exhaustive_enumeration(n, mu, nu, gamma);
+  }
+
+  /** test a specific setting */
+  @Test(timeout = 3600000)
+  public void test_exhaustive_n10_mu2_nu9_gamma_max() {
+    final int n = 10;
+    final int mu = 2;
+    final int nu = 9;
+    final int gamma = WModel_Ruggedness.max_gamma(n);
+    this.__test_exhaustive_enumeration(n, mu, nu, gamma);
+  }
+
+  /** test a specific setting */
+  @Test(timeout = 3600000)
+  public void test_exhaustive_n17_mu1_nu17_gamma0() {
+    final int n = 17;
+    final int mu = 1;
+    final int nu = n;
+    final int gamma = 0;
+    this.__test_exhaustive_enumeration(n, mu, nu, gamma);
+  }
+
+  /** test a specific setting */
+  @Test(timeout = 3600000)
+  public void test_exhaustive_n10_mu1_nu10_gamma0() {
+    final int n = 10;
+    final int mu = 1;
+    final int nu = n;
+    final int gamma = 0;
+    this.__test_exhaustive_enumeration(n, mu, nu, gamma);
+  }
+
+  /** test a specific setting */
+  @Test(timeout = 3600000)
+  public void test_exhaustive_n17_mu1_nu17_gamma10() {
+    final int n = 17;
+    final int mu = 1;
+    final int nu = n;
+    final int gamma = 10;
+    this.__test_exhaustive_enumeration(n, mu, nu, gamma);
+  }
+
+  /** test a specific setting */
+  @Test(timeout = 3600000)
+  public void test_exhaustive_n10_mu1_nu10_gamma10() {
+    final int n = 10;
+    final int mu = 1;
+    final int nu = n;
+    final int gamma = 10;
+    this.__test_exhaustive_enumeration(n, mu, nu, gamma);
+  }
+
+  /** test a specific setting */
+  @Test(timeout = 3600000)
+  public void test_exhaustive_n10_mu1_nu10_gamma_max() {
+    final int n = 10;
+    final int mu = 1;
+    final int nu = 10;
+    final int gamma = WModel_Ruggedness.max_gamma(n);
+    this.__test_exhaustive_enumeration(n, mu, nu, gamma);
+  }
+
+  /** test a specific setting */
+  @Test(timeout = 3600000)
+  public void test_exhaustive_n17_mu1_nu17_gamma_max() {
+    final int n = 17;
+    final int mu = 1;
+    final int nu = 17;
+    final int gamma = WModel_Ruggedness.max_gamma(n);
+    this.__test_exhaustive_enumeration(n, mu, nu, gamma);
+  }
+
+  /** test a specific setting */
+  @Test(timeout = 3600000)
+  public void test_exhaustive_n20_mu1_nu20_gamma_max() {
+    final int n = 20;
+    final int mu = 1;
+    final int nu = 20;
+    final int gamma = WModel_Ruggedness.max_gamma(n);
+    this.__test_exhaustive_enumeration(n, mu, nu, gamma);
+  }
+
+  /** test a specific setting */
+  @Test(timeout = 3600000)
+  public void test_exhaustive_n12_mu2_nu12_gamma_max() {
+    if (_Internal_Base.FAST_TESTS) {
+      return;
+    }
+    final int n = 12;
+    final int mu = 2;
+    final int nu = 12;
+    final int gamma = WModel_Ruggedness.max_gamma(n);
+    this.__test_exhaustive_enumeration(n, mu, nu, gamma);
+  }
+
+  /** test a specific setting */
+  @Test(timeout = 3600000)
+  public void test_exhaustive_n5_mu2_nu12_gamma_max() {
+    final int n = 5;
+    final int mu = 2;
+    final int nu = 12;
+    final int gamma = WModel_Ruggedness.max_gamma(n);
+    this.__test_exhaustive_enumeration(n, mu, nu, gamma);
+  }
+
+  /** test a specific setting */
+  @Test(timeout = 3600000)
+  public void test_exhaustive_n7_mu2_nu12_gamma_max() {
+    final int n = 7;
+    final int mu = 2;
+    final int nu = 12;
+    final int gamma = WModel_Ruggedness.max_gamma(n);
+    this.__test_exhaustive_enumeration(n, mu, nu, gamma);
+  }
+
+  /** test a specific setting */
+  @Test(timeout = 3600000)
+  public void test_exhaustive_n5_mu3_nu12_gamma_max() {
+    final int n = 5;
+    final int mu = 3;
+    final int nu = 12;
+    final int gamma = WModel_Ruggedness.max_gamma(n);
+    this.__test_exhaustive_enumeration(n, mu, nu, gamma);
+  }
+
+  /** test a specific setting */
+  @Test(timeout = 3600000)
+  public void test_exhaustive_n10_mu2_nu10_gamma_max() {
+    final int n = 10;
+    final int mu = 2;
+    final int nu = 10;
+    final int gamma = WModel_Ruggedness.max_gamma(n);
+    this.__test_exhaustive_enumeration(n, mu, nu, gamma);
   }
 
   /**

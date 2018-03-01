@@ -128,6 +128,7 @@ public final class WModel_SingleObjective_Boolean
     }
 
     final int f = WModel_Boolean.f(epi, this.m_n);
+
     if (this.m_ruggedness != null) {
       return this.m_ruggedness[f];
     }
