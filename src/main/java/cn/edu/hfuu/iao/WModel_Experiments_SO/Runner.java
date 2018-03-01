@@ -337,7 +337,7 @@ public final class Runner {
       final Path objective = IOUtils.makeDirs(algo.resolve(folder));
 
       Path file = objective.resolve(algoName + '_' + name + "_seed="//$NON-NLS-1$
-          + Long.toString(seed, Character.MAX_RADIX) + ".txt");//$NON-NLS-1$
+          + Long.toHexString(seed) + ".txt");//$NON-NLS-1$
 
       try {
         file = Files.createFile(file);
