@@ -142,7 +142,7 @@ public final class Runner {
       writer.write(algorithm.folderName());
       writer.newLine();
       writer.write("# random seed: 0x"); //$NON-NLS-1$
-      writer.write(Long.toHexString(seed));
+      writer.write(Runner.__seedToString(seed));
       writer.write('L');
       writer.newLine();
       writer.write("# algorithm_class: "); //$NON-NLS-1$
@@ -288,6 +288,21 @@ public final class Runner {
   }
 
   /**
+   * convert a seed to a string
+   *
+   * @param seed
+   *          the seed
+   * @return the string
+   */
+  private static final String __seedToString(final long seed) {
+    String res = Long.toHexString(seed);
+    while (res.length() < 16) {
+      res = ('0' + res);
+    }
+    return res;
+  }
+
+  /**
    * Run the given algorithm on the specified problem. The files names will
    * be created based on the setup and the random seed. If a file for a
    * given setup and seed already exists, we skip doing the run.
@@ -337,7 +352,7 @@ public final class Runner {
       final Path objective = IOUtils.makeDirs(algo.resolve(folder));
 
       Path file = objective.resolve(algoName + '_' + name + "_seed="//$NON-NLS-1$
-          + Long.toHexString(seed) + ".txt");//$NON-NLS-1$
+          + Runner.__seedToString(seed) + ".txt");//$NON-NLS-1$
 
       try {
         file = Files.createFile(file);
