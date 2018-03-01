@@ -1,16 +1,17 @@
-package cn.edu.hfuu.iao.WModel_Experiments.singleObjective.examples;
+package cn.edu.hfuu.iao.WModel_Experiments_SO.examples;
 
-import cn.edu.hfuu.iao.WModel_Experiments.singleObjective.Runner;
-import cn.edu.hfuu.iao.WModel_Experiments.singleObjective.examples.base.Exhaustive_Enumerator;
-import cn.edu.hfuu.iao.WModel_Experiments.singleObjective.examples.base.Random_Sampling;
-import cn.edu.hfuu.iao.WModel_Experiments.singleObjective.examples.ea.EA;
-import cn.edu.hfuu.iao.WModel_Experiments.singleObjective.examples.ea.FFA_EA;
-import cn.edu.hfuu.iao.WModel_Experiments.singleObjective.examples.hc.MFlipHillClimber;
-import cn.edu.hfuu.iao.WModel_Experiments.singleObjective.examples.hc.MFlipHillClimberWithRestarts;
-import cn.edu.hfuu.iao.WModel_Experiments.singleObjective.examples.hc.OneFlipHillClimber;
-import cn.edu.hfuu.iao.WModel_Experiments.singleObjective.examples.hc.OneFlipHillClimberWithRestarts;
-import cn.edu.hfuu.iao.WModel_Experiments.singleObjective.examples.hc.TwoFlipHillClimber;
-import cn.edu.hfuu.iao.WModel_Experiments.singleObjective.examples.hc.TwoFlipHillClimberWithRestarts;
+import cn.edu.hfuu.iao.WModel_Experiments_SO.Runner;
+import cn.edu.hfuu.iao.WModel_Experiments_SO.examples.base.Exhaustive_Enumerator;
+import cn.edu.hfuu.iao.WModel_Experiments_SO.examples.base.Random_Sampling;
+import cn.edu.hfuu.iao.WModel_Experiments_SO.examples.ea.EA;
+import cn.edu.hfuu.iao.WModel_Experiments_SO.examples.ea.FFA_EA;
+import cn.edu.hfuu.iao.WModel_Experiments_SO.examples.hc.MFlipHillClimber;
+import cn.edu.hfuu.iao.WModel_Experiments_SO.examples.hc.MFlipHillClimberWithRestarts;
+import cn.edu.hfuu.iao.WModel_Experiments_SO.examples.hc.OneFlipHillClimber;
+import cn.edu.hfuu.iao.WModel_Experiments_SO.examples.hc.OneFlipHillClimberWithRestarts;
+import cn.edu.hfuu.iao.WModel_Experiments_SO.examples.hc.TwoFlipHillClimber;
+import cn.edu.hfuu.iao.WModel_Experiments_SO.examples.hc.TwoFlipHillClimberWithRestarts;
+import cn.edu.hfuu.iao.utils.ConsoleIO;
 
 /** Run the examples. */
 public class Main {
@@ -23,7 +24,7 @@ public class Main {
    */
   @SuppressWarnings("unchecked")
   public static final void main(final String[] args) {
-    Runner.log("Running the Example Experiments"); //$NON-NLS-1$
+    ConsoleIO.stdout("Running the Example Experiments"); //$NON-NLS-1$
 
     Runner.run(128, //
         true, // wait until all tasks are finished, then compress output
@@ -49,6 +50,6 @@ public class Main {
         Runner.setup(new FFA_EA(8, 16, 0.3d)), //
         Runner.setup(new FFA_EA(32, 64, 0.3d))//
     );
-    Runner.log("done.");//$NON-NLS-1$
+    ConsoleIO.stdout("done.");//$NON-NLS-1$
   }
 }

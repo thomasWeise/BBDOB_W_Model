@@ -1,11 +1,11 @@
-package cn.edu.hfuu.iao.WModel_Experiments.singleObjective.examples.hc;
+package cn.edu.hfuu.iao.WModel_Experiments_SO.examples.hc;
 
 import java.io.BufferedWriter;
 import java.io.IOException;
 import java.util.Random;
 
 import cn.edu.hfuu.iao.WModel.WModel_SingleObjective;
-import cn.edu.hfuu.iao.WModel_Experiments.singleObjective.Algorithm_Boolean;
+import cn.edu.hfuu.iao.WModel_Experiments_SO.Algorithm_Boolean;
 
 /**
  * A simple Hill Climbing algorithm which tries to flip a single bit in

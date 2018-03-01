@@ -39,7 +39,7 @@
 
 	<properties>
 		<encoding>UTF-8</encoding>
-		<project.mainClass>cn.edu.hfuu.iao.WModel_Experiments.singleObjective.examples.Main</project.mainClass>
+		<project.mainClass>cn.edu.hfuu.iao.WModel_Experiments_SO.examples.Main</project.mainClass>
 		<project.build.sourceEncoding>${encoding}</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>${encoding}</project.reporting.outputEncoding>
 		<java.version>1.8</java.version>

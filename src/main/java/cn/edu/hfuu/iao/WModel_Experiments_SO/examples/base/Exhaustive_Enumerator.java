@@ -1,9 +1,9 @@
-package cn.edu.hfuu.iao.WModel_Experiments.singleObjective.examples.base;
+package cn.edu.hfuu.iao.WModel_Experiments_SO.examples.base;
 
 import java.util.Random;
 
 import cn.edu.hfuu.iao.WModel.WModel_SingleObjective;
-import cn.edu.hfuu.iao.WModel_Experiments.singleObjective.Algorithm_Boolean;
+import cn.edu.hfuu.iao.WModel_Experiments_SO.Algorithm_Boolean;
 
 /**
  * An exhaustive enumeration method should be able to solve smaller

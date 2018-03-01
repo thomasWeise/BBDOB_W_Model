@@ -1,4 +1,4 @@
-package cn.edu.hfuu.iao.WModel_Experiments.singleObjective;
+package cn.edu.hfuu.iao.WModel_Experiments_SO;
 
 import java.io.BufferedWriter;
 import java.io.IOException;

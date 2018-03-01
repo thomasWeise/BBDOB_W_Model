@@ -1,4 +1,4 @@
-package cn.edu.hfuu.iao.WModel_Experiments.singleObjective;
+package cn.edu.hfuu.iao.WModel_Experiments_SO;
 
 import java.io.BufferedWriter;
 import java.io.PrintWriter;
@@ -21,8 +21,10 @@ import java.util.function.Supplier;
 import cn.edu.hfuu.iao.WModel.WModel_Ruggedness;
 import cn.edu.hfuu.iao.WModel.WModel_SingleObjective;
 import cn.edu.hfuu.iao.WModel.WModel_SingleObjective_Boolean;
-import cn.edu.hfuu.iao.WModel_Experiments.Compressor;
-import cn.edu.hfuu.iao.WModel_Experiments.SimpleParallelExecutor;
+import cn.edu.hfuu.iao.utils.Compressor;
+import cn.edu.hfuu.iao.utils.ConsoleIO;
+import cn.edu.hfuu.iao.utils.IOUtils;
+import cn.edu.hfuu.iao.utils.SimpleParallelExecutor;
 
 /**
  * This class can be used to execute parallel replicable experiments with
@@ -51,26 +53,6 @@ public final class Runner {
       ThreadLocal.withInitial(() -> new Random());
 
   /**
-   * print log output to stdout
-   *
-   * @param string
-   *          the string to log
-   */
-  public static final void log(final String string) {
-    synchronized (System.out) {
-      synchronized (System.err) {
-        System.out.flush();
-        System.err.flush();
-        System.out.print(new Date());
-        System.out.print(' ');
-        System.out.println(string);
-        System.out.flush();
-        System.err.flush();
-      }
-    }
-  }
-
-  /**
    * perform one run of the algorithm
    *
    * @param <T>
@@ -88,7 +70,10 @@ public final class Runner {
   public static final <T> void run(final Algorithm<T> algorithm,
       final WModel_SingleObjective<T> f, final long seed,
       final Path logFile) {
-    try (final BufferedWriter writer = Files.newBufferedWriter(logFile)) {
+
+    final Path useFile = IOUtils.canonicalize(logFile);
+
+    try (final BufferedWriter writer = Files.newBufferedWriter(useFile)) {
 
       final long startTime = System.currentTimeMillis();
 
@@ -98,7 +83,7 @@ public final class Runner {
       writer.newLine();
 
       writer.write("# path: ");//$NON-NLS-1$
-      writer.write(logFile.toString());
+      writer.write(useFile.toString());
       writer.newLine();
 
       writer.write("# start time: ");//$NON-NLS-1$
@@ -153,6 +138,9 @@ public final class Runner {
       writer.write("# algorithm: "); //$NON-NLS-1$
       writer.write(algorithm.toString());
       writer.newLine();
+      writer.write("# algorithm short: "); //$NON-NLS-1$
+      writer.write(algorithm.folderName());
+      writer.newLine();
       writer.write("# random seed: 0x"); //$NON-NLS-1$
       writer.write(Long.toHexString(seed));
       writer.write('L');
@@ -170,6 +158,9 @@ public final class Runner {
         writer.write("# cpu cores: ");//$NON-NLS-1$
         writer.write(
             Integer.toString(Runtime.getRuntime().availableProcessors()));
+        writer.newLine();
+        writer.write("# executing thread: ");//$NON-NLS-1$
+        writer.write(Long.toString(Thread.currentThread().getId()));
         writer.newLine();
         writer.write("# total memory: ");//$NON-NLS-1$
         writer.write(Long.toString(Runtime.getRuntime().totalMemory()));
@@ -234,31 +225,38 @@ public final class Runner {
           }
         }
       } catch (final Throwable error) {
-        writer.write('#');
-        writer.newLine();
-        writer.write("# EXCEPTION");//$NON-NLS-1$
-        writer.newLine();
-        writer.write(
-            "# An exception was caught, which will cause abnormal termination of the experiment.");//$NON-NLS-1$
-        writer.newLine();
-        writer.write("# We will first print the stack trace.");//$NON-NLS-1$
-        writer.newLine();
-        writer.flush();
-        try (final PrintWriter pw = new PrintWriter(writer) {
-          /** {@inheritDoc} */
-          @Override
-          public final void close() {
-            super.flush();
+        try {
+          writer.write('#');
+          writer.newLine();
+          writer.write("# EXCEPTION");//$NON-NLS-1$
+          writer.newLine();
+          writer.write(
+              "# An exception was caught, which will cause abnormal termination of the experiment.");//$NON-NLS-1$
+          writer.newLine();
+          writer.write("# We will first print the stack trace.");//$NON-NLS-1$
+          writer.newLine();
+          writer.flush();
+          try (final PrintWriter pw = new PrintWriter(writer) {
+            /** {@inheritDoc} */
+            @Override
+            public final void close() {
+              super.flush();
+            }
+          }) {
+            error.printStackTrace(pw);
           }
-        }) {
-          error.printStackTrace(pw);
+          writer.flush();
+        } finally {
+          ConsoleIO.stderr("An error occured while performing run " + //$NON-NLS-1$
+              logFile, error);
         }
-        writer.flush();
       }
 
       writer.write('#');
       writer.newLine();
-      writer.write("# SUMMARY");//$NON-NLS-1$
+      writer.write("# SUMMARY: ");//$NON-NLS-1$
+      writer.write((wrapped.m_best <= 0) ? "success" : //$NON-NLS-1$
+          "failure");//$NON-NLS-1$
       writer.newLine();
       writer.write("# best result: ");//$NON-NLS-1$
       writer.write(Integer.toString(wrapped.m_best));
@@ -284,12 +282,15 @@ public final class Runner {
 
       writer.flush();
     } catch (final Throwable error) {
-      error.printStackTrace();
+      ConsoleIO.stderr("An internal error occured while performing run " + //$NON-NLS-1$
+          logFile, error);
     }
   }
 
   /**
-   * Run the given algorithm on the specified problem
+   * Run the given algorithm on the specified problem. The files names will
+   * be created based on the setup and the random seed. If a file for a
+   * given setup and seed already exists, we skip doing the run.
    *
    * @param <T>
    *          the representation
@@ -316,10 +317,10 @@ public final class Runner {
       final int nu, final int gamma, final long seed,
       final Path baseFolder) {
     try {
-      final Path base = Files.createDirectories(baseFolder);
+      final Path base = IOUtils.makeDirs(baseFolder);
       final String algoName = algorithm.folderName().replace('.', '_')
           .replace('/', '_').replace('\\', '_');
-      final Path algo = Files.createDirectories(base.resolve(algoName));
+      final Path algo = IOUtils.makeDirs(base.resolve(algoName));
 
       String name = "n=" + n; //$NON-NLS-1$
       String folder = name;
@@ -333,21 +334,18 @@ public final class Runner {
       name += "_gamma=" + gamma; //$NON-NLS-1$
       folder = folder + '/' + name;
 
-      final Path objective = Files.createDirectories(algo.resolve(folder));
+      final Path objective = IOUtils.makeDirs(algo.resolve(folder));
 
-      final String fileNameBase = algoName + '_' + name + '_';
+      Path file = objective.resolve(algoName + '_' + name + "_seed="//$NON-NLS-1$
+          + Long.toString(seed, Character.MAX_RADIX) + ".txt");//$NON-NLS-1$
 
-      Path file = null;
-      loop: for (long index = 1L;; index++) {
-        try {
-          file = Files.createFile(objective.resolve(fileNameBase + index + //
-              ".txt")); //$NON-NLS-1$
-          if (file != null) {
-            break loop;
-          }
-        } catch (@SuppressWarnings("unused") final Throwable error) {
-          // ignore
+      try {
+        file = Files.createFile(file);
+        if (file == null) {
+          return;
         }
+      } catch (@SuppressWarnings("unused") final Throwable error) {
+        return;
       }
 
       Runner.run(algorithm, factory.create(n, mu, nu, gamma), seed, file);
@@ -413,9 +411,10 @@ public final class Runner {
           WModel_SingleObjective.Factory>... setups) {
     Path output = null;
     try {
-      output = Files.createDirectories(Paths.get("output")); //$NON-NLS-1$
+      output = IOUtils.makeDirs(Paths.get("output")); //$NON-NLS-1$
     } catch (final Throwable error) {
-      error.printStackTrace();
+      ConsoleIO.stderr("Error while creating the base output directory.", //$NON-NLS-1$
+          error);
       return;
     }
     Runner.run(maxN, output, setups);
@@ -554,7 +553,7 @@ public final class Runner {
       final IntFunction<Spliterator.OfInt> gammas, //
       final Path baseFolder, final int runs) {
 
-    Runner.log("enqueing jobs for n=" + n); //$NON-NLS-1$
+    ConsoleIO.stdout("enqueing jobs for n=" + n); //$NON-NLS-1$
 
     SimpleParallelExecutor.executeMultiple((consumer) -> setups.get()
         .forEachRemaining((pair) -> consumer.accept(() -> Runner.__run(
@@ -620,7 +619,7 @@ public final class Runner {
   }
 
   /** the default m values */
-  private static final int[] DEFAULT_MU = { 1, 2, 3, 4, 6, 8 };
+  private static final int[] DEFAULT_MU = { 1, 2, 3, 4, };
 
   /** the default m spliterator */
   private static final IntFunction<Spliterator.OfInt> DEFAULT_MU_F = (
@@ -777,7 +776,7 @@ public final class Runner {
       final IntFunction<Spliterator.OfInt> gammas, //
       final Path baseFolder, final int runs) {
 
-    Runner.log("enqueing jobs for n=" + n //$NON-NLS-1$
+    ConsoleIO.stdout("enqueing jobs for n=" + n //$NON-NLS-1$
         + " and algorithm=" + algorithm.toString());//$NON-NLS-1$
 
     SimpleParallelExecutor.executeMultiple(
@@ -1022,7 +1021,7 @@ public final class Runner {
       this.m_logSize = 0;
       this.m_fes = 0L;
       final int cl = this.get_candidate_solution_length();
-      this.m_maxFEs = Math.max(1_000_000L, cl * (cl * 500L));
+      this.m_maxFEs = Math.max(1_000_000L, cl * (cl * 200L));
     }
 
     /** {@inheritDoc} */

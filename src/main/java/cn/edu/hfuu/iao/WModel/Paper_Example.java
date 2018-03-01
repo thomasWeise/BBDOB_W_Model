@@ -78,5 +78,4 @@ public class Paper_Example {
       }
     }
   }
-
 }

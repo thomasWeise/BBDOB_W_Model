@@ -1,4 +1,4 @@
-package cn.edu.hfuu.iao.WModel_Experiments.singleObjective.examples.ea;
+package cn.edu.hfuu.iao.WModel_Experiments_SO.examples.ea;
 
 import java.io.BufferedWriter;
 import java.io.IOException;
@@ -6,7 +6,7 @@ import java.util.Arrays;
 import java.util.Random;
 
 import cn.edu.hfuu.iao.WModel.WModel_SingleObjective;
-import cn.edu.hfuu.iao.WModel_Experiments.singleObjective.Algorithm_Boolean;
+import cn.edu.hfuu.iao.WModel_Experiments_SO.Algorithm_Boolean;
 
 /**
  * a simple (mu+lambda) EA using bit-flip mutation and uniform crossover,

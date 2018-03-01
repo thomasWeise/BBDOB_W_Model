@@ -1,4 +1,4 @@
-package cn.edu.hfuu.iao.WModel_Experiments;
+package cn.edu.hfuu.iao.utils;
 
 import java.util.function.Consumer;
 
@@ -27,7 +27,7 @@ public final class SimpleParallelExecutor {
   static {
     PARALLELISM = Math.max(1,
         (Runtime.getRuntime().availableProcessors() - 1));
-    System.out.println(//
+    ConsoleIO.stdout(//
         "Setting up " + //$NON-NLS-1$
             SimpleParallelExecutor.PARALLELISM + " parallel workers."); //$NON-NLS-1$
     for (int i = SimpleParallelExecutor.PARALLELISM; (--i) >= 0;) {

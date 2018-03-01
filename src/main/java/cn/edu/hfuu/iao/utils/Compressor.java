@@ -1,4 +1,4 @@
-package cn.edu.hfuu.iao.WModel_Experiments;
+package cn.edu.hfuu.iao.utils;
 
 import java.lang.ProcessBuilder.Redirect;
 import java.nio.file.Path;
@@ -13,13 +13,7 @@ public class Compressor {
    *          the folder
    */
   public static final void compress(final Path outputFolder) {
-    Path folder = outputFolder;
-    try {
-      folder = folder.toAbsolutePath();
-      folder = folder.toRealPath();
-    } catch (final Throwable error) {
-      error.printStackTrace();
-    }
+    final Path folder = IOUtils.canonicalize(outputFolder);
     final Path destFolder = folder.getParent();
     final String archiveName = folder.getFileName().toString()//
         + ".tar.xz"; //$NON-NLS-1$
@@ -28,13 +22,11 @@ public class Compressor {
     try {
       final ProcessBuilder pb = new ProcessBuilder();
 
-      System.out.println(//
+      ConsoleIO.stdout(//
           "Trying to build archive '"//$NON-NLS-1$
               + archivePath + "' from folder '" + //$NON-NLS-1$
               folder + "' into folder '" + //$NON-NLS-1$
               destFolder + '\'');
-      System.out.flush();
-      System.err.flush();
 
       pb.command(//
           "tar", //$NON-NLS-1$
@@ -50,19 +42,19 @@ public class Compressor {
 
       final int result = pb.start().waitFor();
 
-      System.out.println(//
+      ConsoleIO.stdout(//
           "Finished building archive '"//$NON-NLS-1$
               + archivePath + "' from folder '" + //$NON-NLS-1$
               outputFolder + "' into folder '" + //$NON-NLS-1$
               destFolder + "', return code " + result);//$NON-NLS-1$
     } catch (final Throwable error) {
-      System.err.println(//
+      ConsoleIO.stderr(//
           "Failed to build archive '"//$NON-NLS-1$
               + archivePath + "' from folder '" + //$NON-NLS-1$
               folder + "' into folder '" + //$NON-NLS-1$
               destFolder + //
-              "', maybe you do not have the tar command installed.");//$NON-NLS-1$
-      error.printStackTrace();
+              "', maybe you do not have the tar command installed.", //$NON-NLS-1$
+          error);
     }
   }
 }
