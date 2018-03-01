@@ -69,7 +69,7 @@ public final class WModel_Longs {
    */
   public static final void neutrality(final Solution xIn, final int mu,
       final Solution xOut) {
-    final int thresholdFor1 = (mu >>> 1);
+    final int thresholdFor1 = (mu >>> 1) + (mu & 1);
     for (int i = 0, j = 0, ones = 0, flush = mu; (i < xIn.m_length)
         && (j < xOut.m_length);) {
       if (xIn.get(i)) {

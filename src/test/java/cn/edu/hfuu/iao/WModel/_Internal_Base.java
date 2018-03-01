@@ -3,6 +3,7 @@ package cn.edu.hfuu.iao.WModel;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.function.Consumer;
 
+import org.junit.Assert;
 import org.junit.Ignore;
 
 /** An internal base class for testing */
@@ -34,8 +35,8 @@ abstract class _Internal_Base {
    *          the index
    * @return the value
    */
-  static final boolean _bit(final int x, final int index) {
-    return ((x & (1 << index)) != 0);
+  static final boolean _bit(final long x, final int index) {
+    return ((x & (1L << index)) != 0L);
   }
 
   /**
@@ -82,7 +83,11 @@ abstract class _Internal_Base {
   static final void _exhaustive_iteration(final int n,
       final Consumer<char[]> consumer) {
     final char[] bits = new char[n];
-    for (int i = (1 << n); (--i) >= 0;) {
+
+    if (n >= 63) {
+      Assert.fail("n=" + n); //$NON-NLS-1$
+    }
+    for (long i = (1L << n); (--i) >= 0L;) {
       for (int j = n; (--j) >= 0;) {
         bits[j] = _Internal_Base._bit(_Internal_Base._bit(i, j));
       }

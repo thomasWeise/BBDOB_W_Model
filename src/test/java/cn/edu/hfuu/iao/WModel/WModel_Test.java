@@ -122,6 +122,68 @@ public abstract class WModel_Test<T> extends _Internal_Base {
   }
 
   /**
+   * test the neutrality exhaustively
+   *
+   * @param _n
+   *          the reduced size of a candidate solution
+   * @param _mu
+   *          the neutrality factor
+   */
+  private final void __test_neutrality(final int _n, final int _mu) {
+
+    final char[] real = new char[_n];
+    _Internal_Base._exhaustive_iteration(_n * _mu, (text) -> {
+
+      final int threshold = (_mu >>> 1) | (_mu & 1);
+      int offset = text.length;
+      for (int i = _n; (--i) >= 0;) {
+        int ones = 0;
+        for (int k = _mu; (--k) >= 0;) {
+          if (_Internal_Base._bit(text[--offset])) {
+            ++ones;
+          }
+        }
+        real[i] = _Internal_Base._bit(ones >= threshold);
+      }
+      Assert.assertEquals(String.valueOf(real), //
+          this.toString(this.compute_neutrality(
+              this.fromString(String.valueOf(text)), _mu)));
+    });
+  }
+
+  /** test neutrality mu=2 */
+  @Test(timeout = 3600000)
+  public void neutrality_mu2() {
+    for (int n = 1; n <= 8; n++) {
+      this.__test_neutrality(n, 2);
+    }
+  }
+
+  /** test neutrality mu=3 */
+  @Test(timeout = 3600000)
+  public void neutrality_mu3() {
+    for (int n = 1; n <= 7; n++) {
+      this.__test_neutrality(n, 3);
+    }
+  }
+
+  /** test neutrality mu=4 */
+  @Test(timeout = 3600000)
+  public void neutrality_mu4() {
+    for (int n = 1; n <= 5; n++) {
+      this.__test_neutrality(n, 4);
+    }
+  }
+
+  /** test neutrality mu=5 */
+  @Test(timeout = 3600000)
+  public void neutrality_mu5() {
+    for (int n = 1; n <= 4; n++) {
+      this.__test_neutrality(n, 5);
+    }
+  }
+
+  /**
    * test whether the neutrality mapping correctly manages the example from
    * the paper
    */

@@ -61,7 +61,7 @@ public final class WModel_Boolean {
    */
   public static final void neutrality(final boolean[] xIn, final int mu,
       final boolean[] xOut) {
-    final int thresholdFor1 = (mu >>> 1);
+    final int thresholdFor1 = (mu >>> 1) + (mu & 1);
     for (int i = 0, j = 0, ones = 0, flush = mu; (i < xIn.length)
         && (j < xOut.length);) {
       if (xIn[i]) {
