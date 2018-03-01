@@ -15,8 +15,8 @@ import cn.edu.hfuu.iao.WModel_Experiments.singleObjective.Algorithm_Boolean;
  * <p>
  * This algorithm will re-start if it did not find any solution equally
  * good or better than the optimum for {@code z} steps. {@code z} is
- * initialized to the length of a candidate solution and increased by at
- * least 12.5% at every restart.
+ * initialized to half of the length of a candidate solution and increased
+ * by at least 6.25% at every restart.
  * </p>
  */
 public final class OneFlipHillClimberWithRestarts
@@ -33,7 +33,7 @@ public final class OneFlipHillClimberWithRestarts
     final int n = f.get_candidate_solution_length();
 
     final boolean[] solution = new boolean[n];
-    int nextRestart = n;
+    int nextRestart = n >>> 1;
     restart: while (!(f.shouldTerminate())) {
       int withoutImprovementOrEqual = 0; // reset no-improvement counter
 
@@ -52,7 +52,7 @@ public final class OneFlipHillClimberWithRestarts
           if ((++withoutImprovementOrEqual) >= nextRestart) {
             // increase restart counter
             nextRestart = Math.max(nextRestart + 1,
-                nextRestart + (nextRestart >>> 3));
+                nextRestart + (nextRestart >>> 4));
             continue restart; // we need to do a restart
           }
         } else { // otherwise, remember objective value
@@ -84,9 +84,9 @@ public final class OneFlipHillClimberWithRestarts
     writer.newLine();
     writer.write("# restarts: true");//$NON-NLS-1$
     writer.newLine();
-    writer.write("# restart after: n non-improving FEs");//$NON-NLS-1$
+    writer.write("# restart after: n/2 non-improving FEs");//$NON-NLS-1$
     writer.newLine();
-    writer.write("# restarts increase: max(delay+1, delay *0.125)");//$NON-NLS-1$
+    writer.write("# restarts increase: max(delay+1, delay+delay>>>4)");//$NON-NLS-1$
     writer.newLine();
   }
 }
