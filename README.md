@@ -7,7 +7,7 @@ The W-Model, is a tunable Black-Box Discrete Optimization Benchmarking (BB-DOB) 
 1. For a problem instance with bit length `n`, the objective values range from `0` (the global optimum) to `n`.
 2. The global optimum is always known and can easily be computed.
 3. Problem instances are entirely defined by their parameters in a deterministic way, i.e., no files are needed to store and load them.
-4. In the plain problem without any activated features, the objective function is defined as the Hamming distance to a specific bit string (`01010101...`), i.e., the plain problem is easy to solve and should behave exactly as the well-understood and well-researched Max-One problem.
+4. In the plain problem without any activated features, the objective function is defined as the Hamming distance to a specific bit string (`01010101...`), i.e., the plain problem is easy to solve and should behave exactly as the well-understood and well-researched One Max problem.
 5. Several problematic features such as redundancy/neutrality, epistasis (non-separability), and ruggedness/deceptiveness can be fine tuned.
 6. Computing the objective values is very fast and can be done in `O(n)` for problems without epistasis or low epistasis and in at most `O(n^2)` for highly-epistatic problems.
 7. The problems can be tuned to be hard even for small scales `n`, allowing for fast experiments with low memory footprint.
