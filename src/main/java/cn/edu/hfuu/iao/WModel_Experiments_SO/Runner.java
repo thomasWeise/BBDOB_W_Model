@@ -15,7 +15,7 @@ import java.util.Random;
 import java.util.Spliterator;
 import java.util.Spliterators;
 import java.util.function.IntFunction;
-import java.util.function.IntUnaryOperator;
+import java.util.function.IntPredicate;
 import java.util.function.Supplier;
 
 import cn.edu.hfuu.iao.WModel.WModel_Ruggedness;
@@ -41,8 +41,8 @@ import cn.edu.hfuu.iao.utils.SimpleParallelExecutor;
 public final class Runner {
 
   /** the wrapped function thread local */
-  private static final ThreadLocal<__Wrapped> WRAPPERS = //
-      ThreadLocal.withInitial(() -> new __Wrapped());
+  private static final ThreadLocal<__WrappedObjectiveFunction> WRAPPERS = //
+      ThreadLocal.withInitial(() -> new __WrappedObjectiveFunction());
 
   /**
    * the random number generator thread local (we cannot use
@@ -51,6 +51,9 @@ public final class Runner {
    */
   private static final ThreadLocal<Random> RANDOM = //
       ThreadLocal.withInitial(() -> new Random());
+
+  /** the maximum FEs */
+  private static final int MAX_FES = (1 << 20);
 
   /**
    * perform one run of the algorithm
@@ -91,6 +94,8 @@ public final class Runner {
       writer.write(' ');
       writer.write(new Date(startTime).toString());
       writer.newLine();
+      writer.write('#');
+      writer.newLine();
 
       writer.write("# PROBLEM_INFO");//$NON-NLS-1$
       writer.newLine();
@@ -121,14 +126,14 @@ public final class Runner {
           / ((double) (WModel_Ruggedness.max_gamma(n)))));
       writer.newLine();
 
-      final __Wrapped wrapped = Runner.WRAPPERS.get();
+      final __WrappedObjectiveFunction wrapped = Runner.WRAPPERS.get();
       wrapped._setup(f);
 
       writer.write("# objective: "); //$NON-NLS-1$
       writer.write(f.getClass().toString());
       writer.newLine();
       writer.write("# maxFEs: "); //$NON-NLS-1$
-      writer.write(Long.toString(wrapped.m_maxFEs));
+      writer.write(Integer.toString(Runner.MAX_FES));
       writer.newLine();
 
       writer.write('#');
@@ -202,7 +207,7 @@ public final class Runner {
         if ((wrapped.m_fes > 0L) && ((i <= 0)
             || (wrapped.m_log[i - 1].m_fes != wrapped.m_fes))) {
           // add an end point
-          final __Wrapped._LogPoint p = wrapped.m_log[i++];
+          final __WrappedObjectiveFunction._LogPoint p = wrapped.m_log[i++];
           p.m_fes = wrapped.m_fes;
           p.m_value = wrapped.m_best;
           p.m_time = System.currentTimeMillis();
@@ -210,8 +215,8 @@ public final class Runner {
 
         if (i > 0) {
           final double div = n;
-          for (final __Wrapped._LogPoint p : wrapped.m_log) {
-            writer.write(Long.toString(p.m_fes));
+          for (final __WrappedObjectiveFunction._LogPoint p : wrapped.m_log) {
+            writer.write(Integer.toString(p.m_fes));
             writer.write('\t');
             writer.write(Long.toString(p.m_time - startTime));
             writer.write('\t');
@@ -265,6 +270,11 @@ public final class Runner {
       writer.write("# consumed FEs: "); //$NON-NLS-1$
       writer.write(Long.toString(wrapped.m_fes));
       writer.newLine();
+      if (wrapped.m_fes > Runner.MAX_FES) {
+        writer.write(//
+            "# The algorithm performed more than the permitted maximum FEs. All results above the limit have been ignored."); //$NON-NLS-1$
+        writer.newLine();
+      }
 
       final long endTime = System.currentTimeMillis();
       writer.write("# consumed time: "); //$NON-NLS-1$
@@ -662,54 +672,93 @@ public final class Runner {
    *          the maximum
    * @return the supplier
    */
-  private static final Spliterator.OfInt __default(final int min,
+  private static final Spliterator.OfInt __default_gamma(final int min,
       final int max) {
-    return Runner.__default(min, max, (i) -> i);
+    return Runner.__default_sampling(min, max, (i) -> true);
   }
 
   /**
-   * get a supplier for the default min/max values for a given n
+   * try to add a value
+   *
+   * @param min
+   *          the min
+   * @param max
+   *          the max
+   * @param f
+   *          the value
+   * @param dest
+   *          the destination
+   * @param testIfOK
+   *          the testIfOK predicate
+   */
+  private static final void __try_add(final int min, final int max,
+      final int f, final HashSet<Integer> dest,
+      final IntPredicate testIfOK) {
+    for (int offset = 1;; ++offset) {
+      int test = f + offset;
+      int canGo = 0;
+      if ((f >= min) && (f <= max)) {
+        ++canGo;
+        if (testIfOK.test(test)) {
+          dest.add(Integer.valueOf(f));
+          return;
+        }
+      }
+      test = f - offset;
+      if ((f >= min) && (f <= max)) {
+        ++canGo;
+        if (testIfOK.test(test)) {
+          dest.add(Integer.valueOf(f));
+          return;
+        }
+      }
+      if (canGo <= 0) {
+        return;
+      }
+    }
+  }
+
+  /**
+   * Sample the values between a given range
    *
    * @param min
    *          the minimum
    * @param max
    *          the maximum
-   * @param fixer
-   *          the fixer
+   * @param testIfOK
+   *          the testIfOK
    * @return the supplier
    */
-  private static final Spliterator.OfInt __default(final int min,
-      final int max, final IntUnaryOperator fixer) {
+  private static final Spliterator.OfInt __default_sampling(final int min,
+      final int max, final IntPredicate testIfOK) {
     HashSet<Integer> list = new HashSet<>();
 
-    int fixed = fixer.applyAsInt(min);
-    if ((fixed >= min) && (fixed <= max)) {
-      list.add(Integer.valueOf(fixed));
-    }
-    fixed = fixer.applyAsInt(max);
-    if ((fixed >= min) && (fixed <= max)) {
-      list.add(Integer.valueOf(fixed));
-    }
+    // try to add a fixed version of the minimum or maximum
+    Runner.__try_add(min, max, min, list, testIfOK);
+    Runner.__try_add(min, max, max, list, testIfOK);
 
-    for (final double factor : Runner.DEFAULT_FACTORS) {
+    factors: for (final double factor : Runner.DEFAULT_FACTORS) {
       final double res = min + (factor * (max - min));
-      fixed = fixer.applyAsInt(((int) (Math.round(res))));
-      if ((fixed >= min) && (fixed <= max)) {
-        list.add(Integer.valueOf(fixed));
+
+      int f = ((int) (Math.round(res)));
+      if ((f >= min) && (f <= max) && testIfOK.test(f)) {
+        list.add(Integer.valueOf(f));
+        continue factors;
       }
+
+      f = ((int) res);
+      if ((f >= min) && (f <= max) && testIfOK.test(f)) {
+        list.add(Integer.valueOf(f));
+        continue factors;
+      }
+      Runner.__try_add(min, max, f, list, testIfOK);
     }
 
-    for (int i = 10; ((i >= 10) && (i < max)); i *= 10) {
-      fixed = fixer.applyAsInt(i);
-      if ((fixed >= min) && (fixed <= max)) {
-        list.add(Integer.valueOf(fixed));
-      }
+    for (int f = 10; ((f >= 10) && (f < max)); f *= 10) {
+      Runner.__try_add(min, max, f, list, testIfOK);
     }
-    for (int i = 2; ((i >= 2) && (i < max)); i *= 2) {
-      fixed = fixer.applyAsInt(i);
-      if ((fixed >= min) && (fixed <= max)) {
-        list.add(Integer.valueOf(fixed));
-      }
+    for (int f = 2; ((f >= 2) && (f < max)); f *= 2) {
+      Runner.__try_add(min, max, f, list, testIfOK);
     }
 
     final int[] array = Runner.__toArray(list);
@@ -723,22 +772,10 @@ public final class Runner {
    * @return the supplier
    */
   public static final IntFunction<Spliterator.OfInt> default_nu() {
-    return (final int n) -> Runner.__default(2, n, (i) -> {
-      // Epistasis mappings where nu has the form 2+4v behave odd.
-      // Hence, we try to avoid them
-      if (i > 2) {
-        final int k = (i - 2) / 4;
-        if (((k * 4) + 2) == i) {
-          if (i < n) {
-            return i + 1;
-          }
-          if (i > 2) {
-            return i - 1;
-          }
-        }
-      }
-      return i;
-    });
+    return (final int n) -> Runner.__default_sampling(2, n, (i) ->
+    // Epistasis mappings where nu has the form 2+4v behave odd.
+    // Hence, we try to avoid them
+    (i <= 2) || (((((i - 2) >>> 2) << 2) + 2) != i));
   }
 
   /**
@@ -747,7 +784,7 @@ public final class Runner {
    * @return the supplier
    */
   public static final IntFunction<Spliterator.OfInt> default_gamma() {
-    return (final int n) -> Runner.__default(0,
+    return (final int n) -> Runner.__default_gamma(0,
         WModel_Ruggedness.max_gamma(n));
   }
 
@@ -757,7 +794,7 @@ public final class Runner {
    * @return the default number of runs
    */
   public static final int default_runs() {
-    return 100;
+    return 50;
   }
 
   /**
@@ -988,7 +1025,8 @@ public final class Runner {
    * memory.
    */
   @SuppressWarnings("rawtypes")
-  private static final class __Wrapped extends WModel_SingleObjective {
+  private static final class __WrappedObjectiveFunction
+      extends WModel_SingleObjective {
     /** the wrapped objective function */
     private WModel_SingleObjective m_wrapped;
 
@@ -999,12 +1037,10 @@ public final class Runner {
     /** the best-so-far solution */
     int m_best;
     /** the consumed FEs */
-    long m_fes;
-    /** the maximum FEs */
-    long m_maxFEs;
+    int m_fes;
 
     /** create the logging evaluator */
-    __Wrapped() {
+    __WrappedObjectiveFunction() {
       super();
 
       this.m_log = new _LogPoint[100];
@@ -1034,9 +1070,7 @@ public final class Runner {
       this.m_best = Integer.MAX_VALUE;
       this.m_wrapped = wrap;
       this.m_logSize = 0;
-      this.m_fes = 0L;
-      final int cl = this.get_candidate_solution_length();
-      this.m_maxFEs = Math.max(1_000_000L, cl * (cl * 200L));
+      this.m_fes = 0;
     }
 
     /** {@inheritDoc} */
@@ -1076,11 +1110,14 @@ public final class Runner {
       final int res = this.m_wrapped.applyAsInt(value);
       ++this.m_fes;
       if (res < this.m_best) {
-        this.m_best = res;
-        final _LogPoint p = this.m_log[this.m_logSize++];
-        p.m_fes = this.m_fes;
-        p.m_time = System.currentTimeMillis();
-        p.m_value = res;
+        if (this.m_fes <= Runner.MAX_FES) {
+          // results of FEs coming later is ignored
+          this.m_best = res;
+          final _LogPoint p = this.m_log[this.m_logSize++];
+          p.m_fes = this.m_fes;
+          p.m_time = System.currentTimeMillis();
+          p.m_value = res;
+        }
       }
       return res;
     }
@@ -1088,13 +1125,13 @@ public final class Runner {
     /** {@inheritDoc} */
     @Override
     public final boolean shouldTerminate() {
-      return ((this.m_best <= 0) || (this.m_fes >= this.m_maxFEs));
+      return ((this.m_best <= 0) || (this.m_fes >= Runner.MAX_FES));
     }
 
     /** a log point */
     static final class _LogPoint {
       /** the consumed fes */
-      long m_fes;
+      int m_fes;
       /** the current time */
       long m_time;
       /** the achieved objective value */
