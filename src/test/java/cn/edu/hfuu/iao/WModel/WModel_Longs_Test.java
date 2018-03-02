@@ -50,9 +50,9 @@ public class WModel_Longs_Test extends WModel_Test<WModel_Longs.Solution> {
   /** {@inheritDoc} */
   @Override
   protected final Solution compute_epistasis(final Solution in,
-      final int eta) {
+      final int nu) {
     final Solution res = new Solution(in.size());
-    WModel_Longs.epistasis(in, eta, res);
+    WModel_Longs.epistasis(in, nu, res);
     return res;
   }
 

@@ -54,9 +54,9 @@ public class WModel_Boolean_Longs_Compatibility_Test
   /** {@inheritDoc} */
   @Override
   protected final boolean[] compute_epistasis1(final boolean[] in,
-      final int eta) {
+      final int nu) {
     final boolean[] res = new boolean[in.length];
-    WModel_Boolean.epistasis(in, eta, res);
+    WModel_Boolean.epistasis(in, nu, res);
     return res;
   }
 
@@ -111,9 +111,9 @@ public class WModel_Boolean_Longs_Compatibility_Test
   /** {@inheritDoc} */
   @Override
   protected final Solution compute_epistasis2(final Solution in,
-      final int eta) {
+      final int nu) {
     final Solution res = new Solution(in.size());
-    WModel_Longs.epistasis(in, eta, res);
+    WModel_Longs.epistasis(in, nu, res);
     return res;
   }
 

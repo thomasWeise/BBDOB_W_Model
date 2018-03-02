@@ -171,22 +171,22 @@ public abstract class WModel_Compatibility_Test<T1, T2>
    *
    * @param in
    *          the input
-   * @param eta
-   *          the eta
+   * @param nu
+   *          the nu
    * @return the result
    */
-  protected abstract T1 compute_epistasis1(final T1 in, final int eta);
+  protected abstract T1 compute_epistasis1(final T1 in, final int nu);
 
   /**
    * perform an epistasis transformation
    *
    * @param in
    *          the input
-   * @param eta
-   *          the eta
+   * @param nu
+   *          the nu
    * @return the result
    */
-  protected abstract T2 compute_epistasis2(final T2 in, final int eta);
+  protected abstract T2 compute_epistasis2(final T2 in, final int nu);
 
   /**
    * run a single epistasis test case
@@ -195,16 +195,16 @@ public abstract class WModel_Compatibility_Test<T1, T2>
    *          the input string
    * @param out
    *          the output string
-   * @param eta
-   *          the eta
+   * @param nu
+   *          the nu
    */
-  protected final void test_epistasis(final String in, final int eta,
+  protected final void test_epistasis(final String in, final int nu,
       final String out) {
     final T1 x1 = this.fromString1(in);
     final T2 x2 = this.fromString2(in);
     this.assertEqual(x1, x2);
-    final T1 actual1 = this.compute_epistasis1(x1, eta);
-    final T2 actual2 = this.compute_epistasis2(x2, eta);
+    final T1 actual1 = this.compute_epistasis1(x1, nu);
+    final T2 actual2 = this.compute_epistasis2(x2, nu);
     this.assertEqual(actual1, actual2);
     Assert.assertEquals(out, this.toString1(actual1));
     Assert.assertEquals(out, this.toString2(actual2));
@@ -249,19 +249,19 @@ public abstract class WModel_Compatibility_Test<T1, T2>
    *
    * @param n
    *          the number of bits
-   * @param eta
-   *          the eta
+   * @param nu
+   *          the nu
    */
   private final void __test_epistasis_bijectivity_exhaustively(final int n,
-      final int eta) {
+      final int nu) {
     final HashSet<String> set = new HashSet<>();
     _Internal_Base._exhaustive_iteration(n, (bits) -> {
       final String str = String.valueOf(bits);
       final T1 x1 = this.fromString1(str);
       final T2 x2 = this.fromString2(str);
       this.assertEqual(x1, x2);
-      final T1 r1 = this.compute_epistasis1(x1, eta);
-      final T2 r2 = this.compute_epistasis2(x2, eta);
+      final T1 r1 = this.compute_epistasis1(x1, nu);
+      final T2 r2 = this.compute_epistasis2(x2, nu);
       this.assertEqual(r1, r2);
       final String s1 = this.toString1(r1);
       final String s2 = this.toString2(r2);
@@ -277,8 +277,8 @@ public abstract class WModel_Compatibility_Test<T1, T2>
   public void epistasis_bijectivity_exhaustive() {
     final int maxN = _Internal_Base.FAST_TESTS ? 14 : 16;
     for (int n = 1; n < maxN; n++) {
-      for (int eta = 1; eta < n; ++eta) {
-        this.__test_epistasis_bijectivity_exhaustively(n, eta);
+      for (int nu = 1; nu < n; ++nu) {
+        this.__test_epistasis_bijectivity_exhaustively(n, nu);
       }
     }
   }

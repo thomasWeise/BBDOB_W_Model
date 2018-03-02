@@ -208,11 +208,11 @@ public abstract class WModel_Test<T> extends _Internal_Base {
    *
    * @param in
    *          the input
-   * @param eta
-   *          the eta
+   * @param nu
+   *          the nu
    * @return the result
    */
-  protected abstract T compute_epistasis(final T in, final int eta);
+  protected abstract T compute_epistasis(final T in, final int nu);
 
   /**
    * run a single epistasis test case
@@ -221,13 +221,13 @@ public abstract class WModel_Test<T> extends _Internal_Base {
    *          the input string
    * @param out
    *          the output string
-   * @param eta
-   *          the eta
+   * @param nu
+   *          the nu
    */
-  protected final void test_epistasis(final String in, final int eta,
+  protected final void test_epistasis(final String in, final int nu,
       final String out) {
     final T x = this.fromString(in);
-    final T actual = this.compute_epistasis(x, eta);
+    final T actual = this.compute_epistasis(x, nu);
     Assert.assertEquals(out, this.toString(actual));
   }
 
@@ -280,15 +280,15 @@ public abstract class WModel_Test<T> extends _Internal_Base {
    *
    * @param n
    *          the number of bits
-   * @param eta
-   *          the eta
+   * @param nu
+   *          the nu
    */
   private final void __test_epistasis_bijectivity_exhaustively(final int n,
-      final int eta) {
+      final int nu) {
     final HashSet<String> set = new HashSet<>();
     _Internal_Base._exhaustive_iteration(n, (bits) -> {
       final String result = this.toString(this.compute_epistasis(//
-          this.fromString(String.valueOf(bits)), eta));
+          this.fromString(String.valueOf(bits)), nu));
       Assert.assertTrue(set.add(result));
     });
     Assert.assertEquals((1 << n), set.size());
@@ -299,8 +299,8 @@ public abstract class WModel_Test<T> extends _Internal_Base {
   public void epistasis_bijectivity_exhaustive() {
     final int maxN = _Internal_Base.FAST_TESTS ? 18 : 22;
     for (int n = 1; n < maxN; n++) {
-      for (int eta = 1; eta < n; ++eta) {
-        this.__test_epistasis_bijectivity_exhaustively(n, eta);
+      for (int nu = 1; nu < n; ++nu) {
+        this.__test_epistasis_bijectivity_exhaustively(n, nu);
       }
     }
   }
@@ -310,24 +310,24 @@ public abstract class WModel_Test<T> extends _Internal_Base {
    *
    * @param n
    *          the number of bits
-   * @param eta
-   *          the eta
+   * @param nu
+   *          the nu
    */
   private final void __test_epistasis_promise_exhaustively(final int n,
-      final int eta) {
+      final int nu) {
     final char[] other = new char[n];
     _Internal_Base._exhaustive_iteration(n, (bits) -> {
       final String vbits = this.toString(this
-          .compute_epistasis(this.fromString(String.valueOf(bits)), eta));
+          .compute_epistasis(this.fromString(String.valueOf(bits)), nu));
       System.arraycopy(bits, 0, other, 0, n);
 
-      final int remainingPromise = n % eta;
+      final int remainingPromise = n % nu;
       final int maxPromiseIndex = (n - remainingPromise);
 
       for (int i = n; (--i) >= 0;) {
         other[i] = _Internal_Base._bit(!(_Internal_Base._bit(other[i])));
         final String vother = this.toString(this.compute_epistasis(
-            this.fromString(String.valueOf(other)), eta));
+            this.fromString(String.valueOf(other)), nu));
         int changed = 0;
 
         for (int j = n; (--j) >= 0;) {
@@ -336,7 +336,7 @@ public abstract class WModel_Test<T> extends _Internal_Base {
           }
         }
 
-        final int promise = (i < maxPromiseIndex) ? (eta - 1)
+        final int promise = (i < maxPromiseIndex) ? (nu - 1)
             : (remainingPromise - 1);
 
         if (changed < promise) {
@@ -345,7 +345,7 @@ public abstract class WModel_Test<T> extends _Internal_Base {
               + promise + " when moving from " + //$NON-NLS-1$
           String.valueOf(bits) + " to "//$NON-NLS-1$
               + String.valueOf(other) + //
-          " for eta=" + eta + //$NON-NLS-1$
+          " for nu=" + nu + //$NON-NLS-1$
           ", but got " + //$NON-NLS-1$
           vbits + " and " + vother);//$NON-NLS-1$
         }
@@ -359,8 +359,8 @@ public abstract class WModel_Test<T> extends _Internal_Base {
   public void epistasis_promise_exhaustive() {
     final int maxN = _Internal_Base.FAST_TESTS ? 17 : 18;
     for (int n = 1; n < maxN; n++) {
-      for (int eta = 2; eta < n; ++eta) {
-        this.__test_epistasis_promise_exhaustively(n, eta);
+      for (int nu = 2; nu < n; ++nu) {
+        this.__test_epistasis_promise_exhaustively(n, nu);
       }
     }
   }

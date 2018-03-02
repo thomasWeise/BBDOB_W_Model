@@ -77,7 +77,7 @@ public final class WModel_Boolean {
 
   /**
    * The internal function for performing the epistasis transformation
-   * {@code eta_nu} of a sub-string of length {@code nu} of {@code xIn}
+   * {@code e_nu} of a sub-string of length {@code nu} of {@code xIn}
    * starting at offset {@code start}, writing the result to {@code xOut}.
    *
    * @param xIn
@@ -111,8 +111,8 @@ public final class WModel_Boolean {
 
   /**
    * The second layer of the {@code W model} is the epistasis
-   * transformation {@code eta_nu}. A string {@code xIn} is taken and
-   * {@code eta_nu(xIn)} is written to {@code xOut}.
+   * transformation {@code e_nu}. A string {@code xIn} is taken and
+   * {@code e_nu(xIn)} is written to {@code xOut}.
    *
    * @param xIn
    *          the input bit string

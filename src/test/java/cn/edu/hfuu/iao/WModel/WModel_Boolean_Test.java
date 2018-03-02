@@ -53,9 +53,9 @@ public class WModel_Boolean_Test extends WModel_Test<boolean[]> {
   /** {@inheritDoc} */
   @Override
   protected final boolean[] compute_epistasis(final boolean[] in,
-      final int eta) {
+      final int nu) {
     final boolean[] res = new boolean[in.length];
-    WModel_Boolean.epistasis(in, eta, res);
+    WModel_Boolean.epistasis(in, nu, res);
     return res;
   }
 
