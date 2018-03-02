@@ -12,6 +12,12 @@ The W-Model, is a tunable Black-Box Discrete Optimization Benchmarking (BB-DOB) 
 6. Computing the objective values is very fast and can be done in `O(n)` for problems without epistasis or low epistasis and in at most `O(n^2)` for highly-epistatic problems.
 7. The problems can be tuned to be hard even for small scales `n`, allowing for fast experiments with low memory footprint.
 
+### Reference
+
+Thomas Weise, Stefan Niemczyk, Hendrik Skubch, Roland Reichle, and Kurt Geihs. A Tunable Model for Multi-Objective, Epistatic, Rugged, and Neutral Fitness Landscapes. In Maarten Keijzer, Giuliano Antoniol, Clare Bates Congdon, Kalyanmoy Deb, Benjamin Doerr, Nikolaus Hansen, John H. Holmes, Gregory S. Hornby, Daniel Howard, James Kennedy, Sanjeev P. Kumar, Fernando G. Lobo, Julian Francis Miller, Jason H. Moore, Frank Neumann, Martin Pelikan, Jordan B. Pollack, Kumara Sastry, Kenneth Owen Stanley, Adrian Stoica, El-Ghazali, and Ingo Wegener, editors, *Proceedings of the 10th Annual Conference on Genetic and Evolutionary Computation Conference (GECCO'08)*, pages 795-802, July 12-16, 2008, Renaissance Atlanta Hotel Downtown: Atlanta, GA, USA. ISBN: 978-1-60558-130-9, New York, NY, USA: ACM Press. doi:[10.1145/1389095.1389252](http://dx.doi.org/10.1145/1389095.1389252)
+
+
+
 ## The Difficult Features 
 
 1. Uniform neutrality can be set via parameter `mu` and increases the representation length to `mu*n` via uniform reduncancy. This does not change the number of possible objective values. For `mu=1`, no neutrality is added. This translation can take place in `O(n*m)`.
