@@ -600,6 +600,27 @@ public final class Runner {
   }
 
   /**
+   * add a value to the collection
+   *
+   * @param value
+   *          the value
+   * @param dest
+   *          the collection
+   * @param min
+   *          the minimum permitted value
+   * @param max
+   *          the maximum permitted value
+   * @return was the value added ({@code true}) or not ({@code false})?
+   */
+  private static final boolean __add(final int value,
+      final Collection<Integer> dest, final int min, final int max) {
+    if ((value >= min) && (value <= max)) {
+      return dest.add(Integer.valueOf(value));
+    }
+    return false;
+  }
+
+  /**
    * create an array for a collection and clear the collection
    *
    * @param list
@@ -628,14 +649,17 @@ public final class Runner {
       final int max) {
     HashSet<Integer> list = new HashSet<>();
     for (int i = 16; ((i >= 16) && (i < max)); i <<= 1) {
-      list.add(Integer.valueOf(i));
+      Runner.__add(i, list, 5, Runner.MAX_FES);
     }
     for (int i = 10; ((i >= 10) && (i < max)); i *= 10) {
-      list.add(Integer.valueOf(i));
+      Runner.__add(i, list, 10, Runner.MAX_FES);
+      Runner.__add(((i * 3) >>> 2), list, 10, Runner.MAX_FES);
+      Runner.__add((i >>> 1), list, 10, Runner.MAX_FES);
+      Runner.__add((i >>> 2), list, 10, Runner.MAX_FES);
     }
     list.add(Integer.valueOf(max));
-    for (int i = max; i >= 100; i >>= 1) {
-      list.add(Integer.valueOf(i));
+    for (int i = max; i >= 100; i >>>= 1) {
+      Runner.__add(i, list, 5, Runner.MAX_FES);
     }
 
     final int[] array = Runner.__toArray(list);
@@ -700,7 +724,7 @@ public final class Runner {
       if ((f >= min) && (f <= max)) {
         ++canGo;
         if (testIfOK.test(test)) {
-          dest.add(Integer.valueOf(f));
+          Runner.__add(f, dest, min, max);
           return;
         }
       }
@@ -708,7 +732,7 @@ public final class Runner {
       if ((f >= min) && (f <= max)) {
         ++canGo;
         if (testIfOK.test(test)) {
-          dest.add(Integer.valueOf(f));
+          Runner.__add(f, dest, min, max);
           return;
         }
       }
@@ -742,13 +766,13 @@ public final class Runner {
 
       int f = ((int) (Math.round(res)));
       if ((f >= min) && (f <= max) && testIfOK.test(f)) {
-        list.add(Integer.valueOf(f));
+        Runner.__add(f, list, min, max);
         continue factors;
       }
 
       f = ((int) res);
       if ((f >= min) && (f <= max) && testIfOK.test(f)) {
-        list.add(Integer.valueOf(f));
+        Runner.__add(f, list, min, max);
         continue factors;
       }
       Runner.__try_add(min, max, f, list, testIfOK);
@@ -794,7 +818,7 @@ public final class Runner {
    * @return the default number of runs
    */
   public static final int default_runs() {
-    return 50;
+    return 100;
   }
 
   /**
@@ -1034,7 +1058,7 @@ public final class Runner {
     _LogPoint[] m_log;
     /** the log size */
     int m_logSize;
-    /** the best-so-far solution */
+    /** the objective value of the best-so-far solution */
     int m_best;
     /** the consumed FEs */
     int m_fes;

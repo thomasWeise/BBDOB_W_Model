@@ -24,8 +24,8 @@ public class Main {
     ConsoleIO.stdout("Running the Example Experiments"); //$NON-NLS-1$
 
     Runner.run(//
-        // run experiments until n=128
-        128, //
+        // run experiments until n=1024
+        1024, //
         // true==wait until all tasks are finished, then compress output
         // folder
         true,
