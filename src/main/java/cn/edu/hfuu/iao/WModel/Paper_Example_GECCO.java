@@ -1,7 +1,7 @@
 package cn.edu.hfuu.iao.WModel;
 
 /** Here we reproduce the example given in our paper. */
-public class Paper_Example {
+public class Paper_Example_GECCO {
 
   /**
    * The main routine
@@ -15,27 +15,27 @@ public class Paper_Example {
         false, false, false, false, };
 
     System.out.print("Start: "); //$NON-NLS-1$
-    Paper_Example.__print(x);
+    Paper_Example_GECCO.__print(x);
     System.out.println();
 
     final boolean[] x_after_neutrality = new boolean[10];
     WModel_Boolean.neutrality(x, 2, x_after_neutrality);
     System.out.print("Neutrality: "); //$NON-NLS-1$
-    Paper_Example.__print(x_after_neutrality);
+    Paper_Example_GECCO.__print(x_after_neutrality);
     System.out.println();
 
     final boolean[] x_after_epistasis = new boolean[x_after_neutrality.length];
     WModel_Boolean.epistasis(x_after_neutrality, 4, x_after_epistasis);
     System.out.print("Epistasis: "); //$NON-NLS-1$
-    Paper_Example.__print(x_after_epistasis);
+    Paper_Example_GECCO.__print(x_after_epistasis);
     System.out.println();
 
     final boolean[][] x_after_multi_obj = new boolean[2][6];
     WModel_Boolean.multi_objectivity(x_after_epistasis, x_after_multi_obj);
     System.out.print("Multi-Objectivity: "); //$NON-NLS-1$
-    Paper_Example.__print(x_after_multi_obj[0]);
+    Paper_Example_GECCO.__print(x_after_multi_obj[0]);
     System.out.print(" / "); //$NON-NLS-1$
-    Paper_Example.__print(x_after_multi_obj[1]);
+    Paper_Example_GECCO.__print(x_after_multi_obj[1]);
     System.out.println();
 
     System.out.print("Objective: "); //$NON-NLS-1$
