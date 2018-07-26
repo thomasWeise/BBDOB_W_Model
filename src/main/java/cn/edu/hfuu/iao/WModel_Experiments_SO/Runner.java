@@ -724,7 +724,7 @@ public final class Runner {
       if ((f >= min) && (f <= max)) {
         ++canGo;
         if (testIfOK.test(test)) {
-          Runner.__add(f, dest, min, max);
+          Runner.__add(test, dest, min, max);
           return;
         }
       }
@@ -732,7 +732,7 @@ public final class Runner {
       if ((f >= min) && (f <= max)) {
         ++canGo;
         if (testIfOK.test(test)) {
-          Runner.__add(f, dest, min, max);
+          Runner.__add(test, dest, min, max);
           return;
         }
       }
