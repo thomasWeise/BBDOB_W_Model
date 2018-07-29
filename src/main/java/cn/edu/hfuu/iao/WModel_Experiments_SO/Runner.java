@@ -718,10 +718,18 @@ public final class Runner {
   private static final void __try_add(final int min, final int max,
       final int f, final HashSet<Integer> dest,
       final IntPredicate testIfOK) {
+
+    if ((f >= min) && (f <= max)) {
+      if (testIfOK.test(f)) {
+        Runner.__add(f, dest, min, max);
+        return;
+      }
+    }
+
     for (int offset = 1;; ++offset) {
       int test = f + offset;
       int canGo = 0;
-      if ((f >= min) && (f <= max)) {
+      if ((test >= min) && (test <= max)) {
         ++canGo;
         if (testIfOK.test(test)) {
           Runner.__add(test, dest, min, max);
@@ -729,7 +737,7 @@ public final class Runner {
         }
       }
       test = f - offset;
-      if ((f >= min) && (f <= max)) {
+      if ((test >= min) && (test <= max)) {
         ++canGo;
         if (testIfOK.test(test)) {
           Runner.__add(test, dest, min, max);
