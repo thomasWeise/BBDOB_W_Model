@@ -30,7 +30,7 @@ public class Runner_Test extends Internal_Base {
   @SuppressWarnings({ "static-method", "unchecked" })
   @Test(timeout = 3600000)
   public void testRunner() throws IOException {
-    final int maxN = Internal_Base.FAST_TESTS ? 21 : 33;
+    final int maxN = Internal_Base.FAST_TESTS ? 12 : 33;
     final Path dest = Files
         .createTempDirectory(Runner_Test.class.getSimpleName());
 

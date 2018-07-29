@@ -14,7 +14,12 @@ The W-Model, is a tunable Black-Box Discrete Optimization Benchmarking (BB-DOB) 
 
 ### Reference
 
-Thomas Weise, Stefan Niemczyk, Hendrik Skubch, Roland Reichle, and Kurt Geihs. A Tunable Model for Multi-Objective, Epistatic, Rugged, and Neutral Fitness Landscapes. In Maarten Keijzer, Giuliano Antoniol, Clare Bates Congdon, Kalyanmoy Deb, Benjamin Doerr, Nikolaus Hansen, John H. Holmes, Gregory S. Hornby, Daniel Howard, James Kennedy, Sanjeev P. Kumar, Fernando G. Lobo, Julian Francis Miller, Jason H. Moore, Frank Neumann, Martin Pelikan, Jordan B. Pollack, Kumara Sastry, Kenneth Owen Stanley, Adrian Stoica, El-Ghazali, and Ingo Wegener, editors, *Proceedings of the 10th Annual Conference on Genetic and Evolutionary Computation Conference (GECCO'08)*, pages 795-802, July 12-16, 2008, Renaissance Atlanta Hotel Downtown: Atlanta, GA, USA. ISBN: 978-1-60558-130-9, New York, NY, USA: ACM Press. doi:[10.1145/1389095.1389252](http://dx.doi.org/10.1145/1389095.1389252)
+1. Thomas Weise and Zijun Wu. Difficult Features of Combinatorial Optimization Problems and the Tunable W-Model Benchmark Problem for Simulating them. In Black Box Discrete Optimization Benchmarking (BB-DOB) Workshop of Companion Material Proceedings of the Genetic and Evolutionary Computation Conference (GECCO 2018), July 15th-19th 2018, Kyoto, Japan, pages 1769-1776, ISBN: 978-1-4503-5764-7. ACM.
+doi:[10.1145/3205651.3208240](http://dx.doi.org/10.1145/3205651.3208240) / [pdf](http://iao.hfuu.edu.cn/images/publications/W2018TWMATBBDOBPIFTBGW.pdf) / [slides](http://iao.hfuu.edu.cn/images/publications/W2018TWMATBBDOBPIFTBGW_slides.pdf)
+
+2. Experimental results with the W-Model and Runner version 1.0.0, can be found at doi:[10.5281/zenodo.1256883](http://dx.doi.org/10.5281/zenodo.1256883). These also do include settings of the form nu=2+(4*v) which we discourage.
+
+3. Thomas Weise, Stefan Niemczyk, Hendrik Skubch, Roland Reichle, and Kurt Geihs. A Tunable Model for Multi-Objective, Epistatic, Rugged, and Neutral Fitness Landscapes. In Maarten Keijzer, Giuliano Antoniol, Clare Bates Congdon, Kalyanmoy Deb, Benjamin Doerr, Nikolaus Hansen, John H. Holmes, Gregory S. Hornby, Daniel Howard, James Kennedy, Sanjeev P. Kumar, Fernando G. Lobo, Julian Francis Miller, Jason H. Moore, Frank Neumann, Martin Pelikan, Jordan B. Pollack, Kumara Sastry, Kenneth Owen Stanley, Adrian Stoica, El-Ghazali, and Ingo Wegener, editors, *Proceedings of the 10th Annual Conference on Genetic and Evolutionary Computation Conference (GECCO'08)*, pages 795-802, July 12-16, 2008, Renaissance Atlanta Hotel Downtown: Atlanta, GA, USA. ISBN: 978-1-60558-130-9, New York, NY, USA: ACM Press. doi:[10.1145/1389095.1389252](http://dx.doi.org/10.1145/1389095.1389252)
 
 
 
