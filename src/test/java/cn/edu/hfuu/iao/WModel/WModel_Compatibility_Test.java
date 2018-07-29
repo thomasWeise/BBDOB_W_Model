@@ -7,6 +7,8 @@ import org.junit.Assert;
 import org.junit.Ignore;
 import org.junit.Test;
 
+import cn.edu.hfuu.iao.Internal_Base;
+
 /**
  * A base class for testing the compatibility of two implementations of the
  * W-Model. If a new implementation is added, we can add an
@@ -23,7 +25,7 @@ import org.junit.Test;
  */
 @Ignore
 public abstract class WModel_Compatibility_Test<T1, T2>
-    extends _Internal_Base {
+    extends Internal_Base {
 
   /**
    * Convert a string to a data object of type 1
@@ -106,7 +108,7 @@ public abstract class WModel_Compatibility_Test<T1, T2>
   /** test whether the to- and from-string conversions work correctly */
   @Test(timeout = 3600000)
   public void toString_fromString_exhaustive() {
-    final int maxI = _Internal_Base.FAST_TESTS ? 16 : 20;
+    final int maxI = Internal_Base.FAST_TESTS ? 16 : 20;
     for (int i = 1; i <= maxI; i++) {
       this.__to_and_from_exhaustive(i);
     }
@@ -255,7 +257,7 @@ public abstract class WModel_Compatibility_Test<T1, T2>
   private final void __test_epistasis_bijectivity_exhaustively(final int n,
       final int nu) {
     final HashSet<String> set = new HashSet<>();
-    _Internal_Base._exhaustive_iteration(n, (bits) -> {
+    Internal_Base.exhaustive_iteration(n, (bits) -> {
       final String str = String.valueOf(bits);
       final T1 x1 = this.fromString1(str);
       final T2 x2 = this.fromString2(str);
@@ -275,7 +277,7 @@ public abstract class WModel_Compatibility_Test<T1, T2>
   /** test whether the epistasis transformation is OK */
   @Test(timeout = 3600000)
   public void epistasis_bijectivity_exhaustive() {
-    final int maxN = _Internal_Base.FAST_TESTS ? 14 : 16;
+    final int maxN = Internal_Base.FAST_TESTS ? 14 : 16;
     for (int n = 1; n < maxN; n++) {
       for (int nu = 1; nu < n; ++nu) {
         this.__test_epistasis_bijectivity_exhaustively(n, nu);
@@ -551,11 +553,11 @@ public abstract class WModel_Compatibility_Test<T1, T2>
     for (int i = (1 << n); (--i) >= 0;) {
       int value = 0;
       for (int j = n; (--j) >= 0;) {
-        final boolean bit = _Internal_Base._bit(i, j);
-        if (_Internal_Base._optimum(j) != bit) {
+        final boolean bit = Internal_Base.bit(i, j);
+        if (Internal_Base.optimum(j) != bit) {
           ++value;
         }
-        bits[j] = _Internal_Base._bit(bit);
+        bits[j] = Internal_Base.bit(bit);
       }
       this.test_f(String.valueOf(bits), n, value);
     }
@@ -731,12 +733,12 @@ public abstract class WModel_Compatibility_Test<T1, T2>
   @Test(timeout = 3600000)
   public void random_permutations() {
     final ThreadLocalRandom random = ThreadLocalRandom.current();
-    for (int samples = _Internal_Base.FAST_TESTS ? 300_000
+    for (int samples = Internal_Base.FAST_TESTS ? 300_000
         : 2_000_000; (--samples) >= 0;) {
       final int n = random.nextInt(1, 200);
       final int c = random.nextInt(1, n + 1);
       final int[] perm = WModel_Permutation.permutation(n, c, random);
-      final String x = _Internal_Base._random(n, random);
+      final String x = Internal_Base.random(n, random);
       final T1 x1 = this.fromString1(x);
       final T2 x2 = this.fromString2(x);
       this.assertEqual(x1, x2);

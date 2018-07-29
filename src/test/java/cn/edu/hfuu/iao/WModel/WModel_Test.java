@@ -7,6 +7,8 @@ import org.junit.Assert;
 import org.junit.Ignore;
 import org.junit.Test;
 
+import cn.edu.hfuu.iao.Internal_Base;
+
 /**
  * A base class for testing a single implementation of the W-Model
  *
@@ -14,7 +16,7 @@ import org.junit.Test;
  *          the data type
  */
 @Ignore
-public abstract class WModel_Test<T> extends _Internal_Base {
+public abstract class WModel_Test<T> extends Internal_Base {
 
   /**
    * Convert a string to a data object
@@ -87,7 +89,7 @@ public abstract class WModel_Test<T> extends _Internal_Base {
    */
   @Test(timeout = 3600000)
   public void toString_fromString_exhaustive() {
-    final int maxI = _Internal_Base.FAST_TESTS ? 20 : 22;
+    final int maxI = Internal_Base.FAST_TESTS ? 20 : 22;
     for (int i = 1; i <= maxI; i++) {
       this.__to_and_from_exhaustive(i);
     }
@@ -132,18 +134,18 @@ public abstract class WModel_Test<T> extends _Internal_Base {
   private final void __test_neutrality(final int _n, final int _mu) {
 
     final char[] real = new char[_n];
-    _Internal_Base._exhaustive_iteration(_n * _mu, (text) -> {
+    Internal_Base.exhaustive_iteration(_n * _mu, (text) -> {
 
       final int threshold = (_mu >>> 1) + (_mu & 1);
       int offset = text.length;
       for (int i = _n; (--i) >= 0;) {
         int ones = 0;
         for (int k = _mu; (--k) >= 0;) {
-          if (_Internal_Base._bit(text[--offset])) {
+          if (Internal_Base.bit(text[--offset])) {
             ++ones;
           }
         }
-        real[i] = _Internal_Base._bit(ones >= threshold);
+        real[i] = Internal_Base.bit(ones >= threshold);
       }
       Assert.assertEquals(String.valueOf(real), //
           this.toString(this.compute_neutrality(
@@ -286,7 +288,7 @@ public abstract class WModel_Test<T> extends _Internal_Base {
   private final void __test_epistasis_bijectivity_exhaustively(final int n,
       final int nu) {
     final HashSet<String> set = new HashSet<>();
-    _Internal_Base._exhaustive_iteration(n, (bits) -> {
+    Internal_Base.exhaustive_iteration(n, (bits) -> {
       final String result = this.toString(this.compute_epistasis(//
           this.fromString(String.valueOf(bits)), nu));
       Assert.assertTrue(set.add(result));
@@ -297,7 +299,7 @@ public abstract class WModel_Test<T> extends _Internal_Base {
   /** test whether the epistasis transformation is OK */
   @Test(timeout = 3600000)
   public void epistasis_bijectivity_exhaustive() {
-    final int maxN = _Internal_Base.FAST_TESTS ? 18 : 22;
+    final int maxN = Internal_Base.FAST_TESTS ? 18 : 22;
     for (int n = 1; n < maxN; n++) {
       for (int nu = 1; nu < n; ++nu) {
         this.__test_epistasis_bijectivity_exhaustively(n, nu);
@@ -316,7 +318,7 @@ public abstract class WModel_Test<T> extends _Internal_Base {
   private final void __test_epistasis_promise_exhaustively(final int n,
       final int nu) {
     final char[] other = new char[n];
-    _Internal_Base._exhaustive_iteration(n, (bits) -> {
+    Internal_Base.exhaustive_iteration(n, (bits) -> {
       final String vbits = this.toString(this
           .compute_epistasis(this.fromString(String.valueOf(bits)), nu));
       System.arraycopy(bits, 0, other, 0, n);
@@ -325,7 +327,7 @@ public abstract class WModel_Test<T> extends _Internal_Base {
       final int maxPromiseIndex = (n - remainingPromise);
 
       for (int i = n; (--i) >= 0;) {
-        other[i] = _Internal_Base._bit(!(_Internal_Base._bit(other[i])));
+        other[i] = Internal_Base.bit(!(Internal_Base.bit(other[i])));
         final String vother = this.toString(this.compute_epistasis(
             this.fromString(String.valueOf(other)), nu));
         int changed = 0;
@@ -357,7 +359,7 @@ public abstract class WModel_Test<T> extends _Internal_Base {
   /** test whether the epistasis transformation is OK */
   @Test(timeout = 3600000)
   public void epistasis_promise_exhaustive() {
-    final int maxN = _Internal_Base.FAST_TESTS ? 17 : 18;
+    final int maxN = Internal_Base.FAST_TESTS ? 17 : 18;
     for (int n = 1; n < maxN; n++) {
       for (int nu = 2; nu < n; ++nu) {
         this.__test_epistasis_promise_exhaustively(n, nu);
@@ -629,11 +631,11 @@ public abstract class WModel_Test<T> extends _Internal_Base {
     for (int i = (1 << n); (--i) >= 0;) {
       int value = 0;
       for (int j = n; (--j) >= 0;) {
-        final boolean bit = _Internal_Base._bit(i, j);
-        if (_Internal_Base._optimum(j) != bit) {
+        final boolean bit = Internal_Base.bit(i, j);
+        if (Internal_Base.optimum(j) != bit) {
           ++value;
         }
-        bits[j] = _Internal_Base._bit(bit);
+        bits[j] = Internal_Base.bit(bit);
       }
       this.test_f(String.valueOf(bits), n, value);
     }
@@ -809,7 +811,7 @@ public abstract class WModel_Test<T> extends _Internal_Base {
         final int[] perm = WModel_Permutation.permutation(n, c,
             ThreadLocalRandom.current());
 
-        _Internal_Base._exhaustive_iteration(perm.length, (text) -> {
+        Internal_Base.exhaustive_iteration(perm.length, (text) -> {
           final String result = this.toString(this.compute_permutate(
               this.fromString(String.valueOf(text)), perm));
           int i = (-1);
@@ -824,7 +826,7 @@ public abstract class WModel_Test<T> extends _Internal_Base {
   /** test permutations exhaustively */
   @Test(timeout = 3600000)
   public void permutation_exhaustive() {
-    final int maxN = _Internal_Base.FAST_TESTS ? 16 : 18;
+    final int maxN = Internal_Base.FAST_TESTS ? 16 : 18;
     for (int n = 1; n < maxN; n++) {
       this.__test_permutation_exhaustively(n);
     }

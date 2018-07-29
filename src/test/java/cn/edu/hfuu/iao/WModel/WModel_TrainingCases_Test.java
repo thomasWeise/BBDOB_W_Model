@@ -6,8 +6,10 @@ import java.util.concurrent.ThreadLocalRandom;
 import org.junit.Assert;
 import org.junit.Test;
 
+import cn.edu.hfuu.iao.Internal_Base;
+
 /** A test class for training cases */
-public class WModel_TrainingCases_Test extends _Internal_Base {
+public class WModel_TrainingCases_Test extends Internal_Base {
 
   /** check the paper example for training cases */
   @SuppressWarnings("static-method")
@@ -99,7 +101,7 @@ public class WModel_TrainingCases_Test extends _Internal_Base {
     for (int i = n; (--i) >= 0;) {
       final int ones = ((int) (result[i] >>> 32L));
       final int zeros = ((int) (result[i] & 0xffffffffL));
-      if (_Internal_Base._optimum(i)) {
+      if (Internal_Base.optimum(i)) {
         founde += ones;
         foundo += (t - zeros);
       } else {
@@ -128,8 +130,8 @@ public class WModel_TrainingCases_Test extends _Internal_Base {
   public void random_training_cases() {
     final Random random = ThreadLocalRandom.current();
 
-    final int maxN = (_Internal_Base.FAST_TESTS ? 20 : 27);
-    final int maxSamples = (_Internal_Base.FAST_TESTS ? 15 : 21);
+    final int maxN = (Internal_Base.FAST_TESTS ? 20 : 27);
+    final int maxSamples = (Internal_Base.FAST_TESTS ? 15 : 21);
 
     for (int n = 1; n < maxN; n++) {
       for (int t = (3 * n); t > 0; t--) {
@@ -201,8 +203,8 @@ public class WModel_TrainingCases_Test extends _Internal_Base {
   public void random_training_cases_ruggness() {
     final Random random = ThreadLocalRandom.current();
 
-    final int maxN = _Internal_Base.FAST_TESTS ? 9 : 11;
-    final int maxSamples = _Internal_Base.FAST_TESTS ? 10 : 21;
+    final int maxN = Internal_Base.FAST_TESTS ? 9 : 11;
+    final int maxSamples = Internal_Base.FAST_TESTS ? 10 : 21;
 
     for (int n = 1; n < maxN; n++) {
       for (int t = (3 * n); t > 0; t--) {

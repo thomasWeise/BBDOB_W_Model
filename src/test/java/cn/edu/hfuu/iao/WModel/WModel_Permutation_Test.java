@@ -6,8 +6,10 @@ import java.util.concurrent.ThreadLocalRandom;
 import org.junit.Assert;
 import org.junit.Test;
 
+import cn.edu.hfuu.iao.Internal_Base;
+
 /** A test class for training cases */
-public class WModel_Permutation_Test extends _Internal_Base {
+public class WModel_Permutation_Test extends Internal_Base {
 
   /** test the from string method for permutations of length 1 */
   @SuppressWarnings("static-method")
@@ -153,7 +155,7 @@ public class WModel_Permutation_Test extends _Internal_Base {
   @SuppressWarnings("static-method")
   @Test(timeout = 3600000)
   public void shuffle_approximately_uniform() {
-    final int maxN = _Internal_Base.FAST_TESTS ? 50 : 120;
+    final int maxN = Internal_Base.FAST_TESTS ? 50 : 120;
     for (int i = 1; i < maxN; i++) {
       WModel_Permutation_Test.__shuffle_approximately_uniform(i);
     }
@@ -188,7 +190,7 @@ public class WModel_Permutation_Test extends _Internal_Base {
   @SuppressWarnings("static-method")
   @Test(timeout = 3600000)
   public void permutation_preserves_values() {
-    final int maxN = _Internal_Base.FAST_TESTS ? 100 : 300;
+    final int maxN = Internal_Base.FAST_TESTS ? 100 : 300;
     for (int n = 1; n < maxN; n++) {
       for (int c = 1; c <= n; c++) {
         WModel_Permutation_Test.__permutation_preserves_values(n, c);
@@ -240,7 +242,7 @@ public class WModel_Permutation_Test extends _Internal_Base {
   @SuppressWarnings("static-method")
   @Test(timeout = 3600000)
   public void permutation_cycle_test() {
-    final int maxN = _Internal_Base.FAST_TESTS ? 100 : 400;
+    final int maxN = Internal_Base.FAST_TESTS ? 100 : 400;
     for (int n = 1; n < maxN; n++) {
       for (int c = 2; c <= n; c++) {
         WModel_Permutation_Test.__permutation_cycle_test(n, c);

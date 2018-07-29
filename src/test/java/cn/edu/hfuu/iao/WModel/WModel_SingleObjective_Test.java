@@ -4,6 +4,8 @@ import org.junit.Assert;
 import org.junit.Ignore;
 import org.junit.Test;
 
+import cn.edu.hfuu.iao.Internal_Base;
+
 /**
  * A base class for testing a single single-objective implementation of the
  * W-Model
@@ -13,7 +15,7 @@ import org.junit.Test;
  */
 @Ignore
 public abstract class WModel_SingleObjective_Test<T>
-    extends _Internal_Base {
+    extends Internal_Base {
 
   /**
    * create the single-objective version of the W-Model
@@ -59,7 +61,7 @@ public abstract class WModel_SingleObjective_Test<T>
     f = this.create(_n, _mu, _nu, _gamma);
 
     final long[] counter = new long[_n + 1];
-    _Internal_Base._exhaustive_iteration(_n * _mu, (text) -> {
+    Internal_Base.exhaustive_iteration(_n * _mu, (text) -> {
       final int res = f.applyAsInt(this.fromString(String.valueOf(text)));
       counter[res] = Math.max(counter[res], counter[res] + 1L);
     });
@@ -172,7 +174,7 @@ public abstract class WModel_SingleObjective_Test<T>
   /** test a specific setting */
   @Test(timeout = 3600000)
   public void test_exhaustive_n12_mu2_nu2_gamma0() {
-    if (_Internal_Base.FAST_TESTS) {
+    if (Internal_Base.FAST_TESTS) {
       return;
     }
     final int n = 12;
@@ -375,7 +377,7 @@ public abstract class WModel_SingleObjective_Test<T>
   /** test a specific setting */
   @Test(timeout = 3600000)
   public void test_exhaustive_n12_mu2_nu3_gamma0() {
-    if (_Internal_Base.FAST_TESTS) {
+    if (Internal_Base.FAST_TESTS) {
       return;
     }
     final int n = 12;
@@ -558,7 +560,7 @@ public abstract class WModel_SingleObjective_Test<T>
   /** test a specific setting */
   @Test(timeout = 3600000)
   public void test_exhaustive_n12_mu2_nu4_gamma0() {
-    if (_Internal_Base.FAST_TESTS) {
+    if (Internal_Base.FAST_TESTS) {
       return;
     }
     final int n = 12;
@@ -721,7 +723,7 @@ public abstract class WModel_SingleObjective_Test<T>
   /** test a specific setting */
   @Test(timeout = 3600000)
   public void test_exhaustive_n12_mu2_nu9_gamma9() {
-    if (_Internal_Base.FAST_TESTS) {
+    if (Internal_Base.FAST_TESTS) {
       return;
     }
     final int n = 12;
@@ -824,7 +826,7 @@ public abstract class WModel_SingleObjective_Test<T>
   /** test a specific setting */
   @Test(timeout = 3600000)
   public void test_exhaustive_n12_mu2_nu9_gamma_max() {
-    if (_Internal_Base.FAST_TESTS) {
+    if (Internal_Base.FAST_TESTS) {
       return;
     }
     final int n = 12;
@@ -927,7 +929,7 @@ public abstract class WModel_SingleObjective_Test<T>
   /** test a specific setting */
   @Test(timeout = 3600000)
   public void test_exhaustive_n12_mu2_nu12_gamma_max() {
-    if (_Internal_Base.FAST_TESTS) {
+    if (Internal_Base.FAST_TESTS) {
       return;
     }
     final int n = 12;

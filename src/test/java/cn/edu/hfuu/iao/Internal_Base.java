@@ -1,4 +1,4 @@
-package cn.edu.hfuu.iao.WModel;
+package cn.edu.hfuu.iao;
 
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.function.Consumer;
@@ -8,7 +8,7 @@ import org.junit.Ignore;
 
 /** An internal base class for testing */
 @Ignore
-abstract class _Internal_Base {
+public abstract class Internal_Base {
 
   /** should we use fast tests? */
   public static final boolean FAST_TESTS;
@@ -21,7 +21,7 @@ abstract class _Internal_Base {
       //
     }
     FAST_TESTS = fast;
-    if (_Internal_Base.FAST_TESTS) {
+    if (Internal_Base.FAST_TESTS) {
       System.out.println("Fast test execution was chosen.");//$NON-NLS-1$
     }
   }
@@ -35,7 +35,7 @@ abstract class _Internal_Base {
    *          the index
    * @return the value
    */
-  static final boolean _bit(final long x, final int index) {
+  protected static final boolean bit(final long x, final int index) {
     return ((x & (1L << index)) != 0L);
   }
 
@@ -46,7 +46,7 @@ abstract class _Internal_Base {
    *          the value
    * @return the bit
    */
-  static final char _bit(final boolean value) {
+  protected static final char bit(final boolean value) {
     return (value ? '1' : '0');
   }
 
@@ -57,7 +57,7 @@ abstract class _Internal_Base {
    *          the value
    * @return the bit
    */
-  static final boolean _bit(final char value) {
+  protected static final boolean bit(final char value) {
     return (value == '1');
   }
 
@@ -68,7 +68,7 @@ abstract class _Internal_Base {
    *          the index
    * @return the bit
    */
-  static final boolean _optimum(final int index) {
+  protected static final boolean optimum(final int index) {
     return ((index & 1) != 0);
   }
 
@@ -80,7 +80,7 @@ abstract class _Internal_Base {
    * @param consumer
    *          the consumer for character arrays of 0 and 1 of length n
    */
-  static final void _exhaustive_iteration(final int n,
+  protected static final void exhaustive_iteration(final int n,
       final Consumer<char[]> consumer) {
     final char[] bits = new char[n];
 
@@ -89,7 +89,7 @@ abstract class _Internal_Base {
     }
     for (long i = (1L << n); (--i) >= 0L;) {
       for (int j = n; (--j) >= 0;) {
-        bits[j] = _Internal_Base._bit(_Internal_Base._bit(i, j));
+        bits[j] = Internal_Base.bit(Internal_Base.bit(i, j));
       }
       consumer.accept(bits);
     }
@@ -104,11 +104,11 @@ abstract class _Internal_Base {
    *          the random number generator
    * @return the string
    */
-  static final String _random(final int n,
+  protected static final String random(final int n,
       final ThreadLocalRandom random) {
     final char[] text = new char[n];
     for (int i = text.length; (--i) >= 0;) {
-      text[i] = _Internal_Base._bit(random.nextBoolean());
+      text[i] = Internal_Base.bit(random.nextBoolean());
     }
     return String.valueOf(text);
   }
