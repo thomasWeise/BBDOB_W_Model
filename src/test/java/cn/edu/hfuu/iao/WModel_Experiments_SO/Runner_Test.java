@@ -30,6 +30,9 @@ public class Runner_Test extends Internal_Base {
    */
   @Test(timeout = 3600000)
   public void test_1_5() throws IOException {
+    if (!Internal_Base.FAST_TESTS) {
+      return;
+    }
     this.__run(1, 5);
   }
 
@@ -66,6 +69,9 @@ public class Runner_Test extends Internal_Base {
    */
   @Test(timeout = 3600000)
   public void test_1_10() throws IOException {
+    if (!Internal_Base.FAST_TESTS) {
+      return;
+    }
     this.__run(1, 10);
   }
 
@@ -186,6 +192,7 @@ public class Runner_Test extends Internal_Base {
           Assert.assertTrue(Files.isDirectory(nd));
           final HashMap<Integer, HashMap<Integer, HashMap<Integer, AtomicInteger>>> mu_nu_gamma = a.m_n_mu_nu_gamma
               .get(n);
+          Assert.assertTrue(mu_nu_gamma.size() > 0);
 
           for (final Integer mu : mu_nu_gamma.keySet()) {
             final String muds = (nds + "_mu=" + mu.intValue()); //$NON-NLS-1$
@@ -194,6 +201,7 @@ public class Runner_Test extends Internal_Base {
             Assert.assertTrue(Files.isDirectory(mud));
             final HashMap<Integer, HashMap<Integer, AtomicInteger>> nu_gamma = mu_nu_gamma
                 .get(mu);
+            Assert.assertTrue(nu_gamma.size() > 0);
 
             for (final Integer nu : nu_gamma.keySet()) {
               final String nuds = (muds + "_nu=" + nu.intValue()); //$NON-NLS-1$
@@ -202,6 +210,7 @@ public class Runner_Test extends Internal_Base {
               Assert.assertTrue(Files.isDirectory(nud));
               final HashMap<Integer, AtomicInteger> gammas = nu_gamma
                   .get(nu);
+              Assert.assertTrue(gammas.size() > 0);
 
               for (final Integer gamma : gammas.keySet()) {
 
@@ -230,6 +239,14 @@ public class Runner_Test extends Internal_Base {
       }
 
       IOUtils.delete(dest);
+
+      for (int i = array.length; (--i) >= 0;) {
+        for (int j = i; (--j) >= 0;) {
+          Assert.assertEquals(array[i].m_n_mu_nu_gamma,
+              array[j].m_n_mu_nu_gamma);
+        }
+      }
+
     } catch (final IOException ieo) {
       Assert.fail(ieo.getMessage());
     }
