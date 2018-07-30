@@ -30,9 +30,6 @@ public class Runner_Test extends Internal_Base {
    */
   @Test(timeout = 3600000)
   public void test_1_5() throws IOException {
-    if (!Internal_Base.FAST_TESTS) {
-      return;
-    }
     this.__run(1, 5);
   }
 
@@ -55,7 +52,7 @@ public class Runner_Test extends Internal_Base {
    */
   @Test(timeout = 3600000)
   public void test_3_5() throws IOException {
-    if (!Internal_Base.FAST_TESTS) {
+    if (Internal_Base.FAST_TESTS) {
       return;
     }
     this.__run(3, 5);
@@ -69,7 +66,7 @@ public class Runner_Test extends Internal_Base {
    */
   @Test(timeout = 3600000)
   public void test_1_10() throws IOException {
-    if (!Internal_Base.FAST_TESTS) {
+    if (Internal_Base.FAST_TESTS) {
       return;
     }
     this.__run(1, 10);
@@ -83,9 +80,6 @@ public class Runner_Test extends Internal_Base {
    */
   @Test(timeout = 3600000)
   public void test_2_10() throws IOException {
-    if (!Internal_Base.FAST_TESTS) {
-      return;
-    }
     this.__run(2, 10);
   }
 
@@ -97,7 +91,7 @@ public class Runner_Test extends Internal_Base {
    */
   @Test(timeout = 3600000)
   public void test_3_10() throws IOException {
-    if (!Internal_Base.FAST_TESTS) {
+    if (Internal_Base.FAST_TESTS) {
       return;
     }
     this.__run(3, 10);
@@ -111,7 +105,7 @@ public class Runner_Test extends Internal_Base {
    */
   @Test(timeout = 3600000)
   public void test_1_32() throws IOException {
-    if (!Internal_Base.FAST_TESTS) {
+    if (Internal_Base.FAST_TESTS) {
       return;
     }
     this.__run(1, 32);
@@ -125,7 +119,7 @@ public class Runner_Test extends Internal_Base {
    */
   @Test(timeout = 3600000)
   public void test_2_32() throws IOException {
-    if (!Internal_Base.FAST_TESTS) {
+    if (Internal_Base.FAST_TESTS) {
       return;
     }
     this.__run(2, 32);
@@ -139,7 +133,7 @@ public class Runner_Test extends Internal_Base {
    */
   @Test(timeout = 3600000)
   public void test_3_32() throws IOException {
-    if (!Internal_Base.FAST_TESTS) {
+    if (Internal_Base.FAST_TESTS) {
       return;
     }
     this.__run(3, 32);
