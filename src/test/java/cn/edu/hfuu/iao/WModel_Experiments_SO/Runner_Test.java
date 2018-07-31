@@ -167,6 +167,8 @@ public class Runner_Test extends TestBase {
           setups);
       SimpleParallelExecutor.waitForAll();
 
+      final AtomicInteger dummy = new AtomicInteger(100);
+
       for (final __Algo a : array) {
         if (a.m_caught != null) {
           throw a.m_caught;
@@ -216,6 +218,7 @@ public class Runner_Test extends TestBase {
                 final AtomicInteger gammaz = gammas.get(gamma);
 
                 Assert.assertEquals(gammaz.intValue(), 100);
+                gammas.put(gamma, dummy); // for comparison
 
                 final Path[] logs = Files.list(gammad)
                     .toArray((i) -> new Path[i]);
