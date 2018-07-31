@@ -6,9 +6,11 @@ import java.util.function.Consumer;
 import org.junit.Assert;
 import org.junit.Ignore;
 
+import cn.edu.hfuu.iao.utils.ConsoleIO;
+
 /** An internal base class for testing */
 @Ignore
-public abstract class Internal_Base {
+public abstract class TestBase {
 
   /** should we use fast tests? */
   public static final boolean FAST_TESTS;
@@ -21,8 +23,8 @@ public abstract class Internal_Base {
       //
     }
     FAST_TESTS = fast;
-    if (Internal_Base.FAST_TESTS) {
-      System.out.println("Fast test execution was chosen.");//$NON-NLS-1$
+    if (TestBase.FAST_TESTS) {
+      ConsoleIO.stdout("Fast test execution was chosen.");//$NON-NLS-1$
     }
   }
 
@@ -89,7 +91,7 @@ public abstract class Internal_Base {
     }
     for (long i = (1L << n); (--i) >= 0L;) {
       for (int j = n; (--j) >= 0;) {
-        bits[j] = Internal_Base.bit(Internal_Base.bit(i, j));
+        bits[j] = TestBase.bit(TestBase.bit(i, j));
       }
       consumer.accept(bits);
     }
@@ -108,7 +110,7 @@ public abstract class Internal_Base {
       final ThreadLocalRandom random) {
     final char[] text = new char[n];
     for (int i = text.length; (--i) >= 0;) {
-      text[i] = Internal_Base.bit(random.nextBoolean());
+      text[i] = TestBase.bit(random.nextBoolean());
     }
     return String.valueOf(text);
   }
