@@ -30,9 +30,6 @@ public class Runner_Test extends Internal_Base {
    */
   @Test(timeout = 3600000)
   public void test_1_5() throws IOException {
-    if (Internal_Base.FAST_TESTS) {
-      return;
-    }
     this.__run(1, 5);
   }
 
@@ -44,6 +41,9 @@ public class Runner_Test extends Internal_Base {
    */
   @Test(timeout = 3600000)
   public void test_2_5() throws IOException {
+    if (Internal_Base.FAST_TESTS) {
+      return;
+    }
     this.__run(2, 5);
   }
 
