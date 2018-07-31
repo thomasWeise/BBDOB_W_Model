@@ -87,6 +87,17 @@ public class Runner_Test extends TestBase {
   }
 
   /**
+   * test the runner for 3 algorithms and n<=12
+   *
+   * @throws IOException
+   *           if i/o fails
+   */
+  @Test(timeout = 3600000)
+  public void test_3_12() throws IOException {
+    this.__run(3, 12);
+  }
+
+  /**
    * test the runner for 3 algorithms and n<=10
    *
    * @throws IOException
@@ -94,6 +105,9 @@ public class Runner_Test extends TestBase {
    */
   @Test(timeout = 3600000)
   public void test_3_10() throws IOException {
+    if (TestBase.FAST_TESTS) {
+      return;
+    }
     this.__run(3, 10);
   }
 
