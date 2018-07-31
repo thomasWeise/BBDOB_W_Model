@@ -27,14 +27,19 @@ public final class SimpleParallelExecutor {
   static {
     PARALLELISM = Math.max(1,
         (Runtime.getRuntime().availableProcessors() - 1));
-    ConsoleIO.stdout(//
-        "Setting up " + //$NON-NLS-1$
-            SimpleParallelExecutor.PARALLELISM + " parallel workers."); //$NON-NLS-1$
-    for (int i = SimpleParallelExecutor.PARALLELISM; (--i) >= 0;) {
-      final Thread thread = new Thread(
-          () -> SimpleParallelExecutor.__executeNext());
-      thread.setDaemon(true);
-      thread.start();
+    if (SimpleParallelExecutor.PARALLELISM <= 1) {
+      ConsoleIO.stdout(//
+          "Setting up for direct execution, no parallel computation."); //$NON-NLS-1$
+    } else {
+      ConsoleIO.stdout(//
+          "Setting up " + //$NON-NLS-1$
+              SimpleParallelExecutor.PARALLELISM + " parallel workers."); //$NON-NLS-1$
+      for (int i = SimpleParallelExecutor.PARALLELISM; (--i) >= 0;) {
+        final Thread thread = new Thread(
+            () -> SimpleParallelExecutor.__executeNext());
+        thread.setDaemon(true);
+        thread.start();
+      }
     }
   }
 
@@ -61,10 +66,14 @@ public final class SimpleParallelExecutor {
    *          the task
    */
   public static final void execute(final Runnable task) {
-    final __Task t = new __Task(task);
-    synchronized (SimpleParallelExecutor.SYNCH) {
-      SimpleParallelExecutor.__push(t);
-      SimpleParallelExecutor.SYNCH.notifyAll();
+    if (SimpleParallelExecutor.PARALLELISM <= 1) {
+      task.run();
+    } else {
+      final __Task t = new __Task(task);
+      synchronized (SimpleParallelExecutor.SYNCH) {
+        SimpleParallelExecutor.__push(t);
+        SimpleParallelExecutor.SYNCH.notifyAll();
+      }
     }
   }
 
@@ -84,21 +93,27 @@ public final class SimpleParallelExecutor {
    *          the task
    */
   public static final void execute(final Runnable[] tasks) {
-    __Task add, next;
-    add = next = null;
-    for (final Runnable task : tasks) {
-      final __Task temp = new __Task(task);
-      if (next == null) {
-        add = next = temp;
-      } else {
-        next.m_next = temp;
-        next = temp;
+    if (SimpleParallelExecutor.PARALLELISM <= 1) {
+      for (final Runnable task : tasks) {
+        task.run();
       }
-    }
+    } else {
+      __Task add, next;
+      add = next = null;
+      for (final Runnable task : tasks) {
+        final __Task temp = new __Task(task);
+        if (next == null) {
+          add = next = temp;
+        } else {
+          next.m_next = temp;
+          next = temp;
+        }
+      }
 
-    synchronized (SimpleParallelExecutor.SYNCH) {
-      SimpleParallelExecutor.__push(add);
-      SimpleParallelExecutor.SYNCH.notifyAll();
+      synchronized (SimpleParallelExecutor.SYNCH) {
+        SimpleParallelExecutor.__push(add);
+        SimpleParallelExecutor.SYNCH.notifyAll();
+      }
     }
   }
 
@@ -116,15 +131,22 @@ public final class SimpleParallelExecutor {
    */
   public static final void executeMultiple(
       final Consumer<Consumer<Runnable>> taskFactory) {
-    synchronized (SimpleParallelExecutor.SYNCH) {
-      taskFactory.accept(
-          (task) -> SimpleParallelExecutor.__push(new __Task(task)));
-      SimpleParallelExecutor.SYNCH.notifyAll();
+    if (SimpleParallelExecutor.PARALLELISM <= 1) {
+      taskFactory.accept((task) -> task.run());
+    } else {
+      synchronized (SimpleParallelExecutor.SYNCH) {
+        taskFactory.accept(
+            (task) -> SimpleParallelExecutor.__push(new __Task(task)));
+        SimpleParallelExecutor.SYNCH.notifyAll();
+      }
     }
   }
 
   /** wait for all tasks to finish */
   public static final void waitForAll() {
+    if (SimpleParallelExecutor.PARALLELISM <= 1) {
+      return;
+    }
     int interruptedCount = 0;
     wait: for (;;) {
       try {
