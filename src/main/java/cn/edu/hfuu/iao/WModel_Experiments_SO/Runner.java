@@ -1,6 +1,7 @@
 package cn.edu.hfuu.iao.WModel_Experiments_SO;
 
 import java.io.BufferedWriter;
+import java.io.IOException;
 import java.io.PrintWriter;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -11,9 +12,11 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Random;
 import java.util.Spliterator;
 import java.util.Spliterators;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.IntFunction;
 import java.util.function.IntPredicate;
 import java.util.function.Supplier;
@@ -41,8 +44,9 @@ import cn.edu.hfuu.iao.utils.SimpleParallelExecutor;
 public final class Runner {
 
   /** the wrapped function thread local */
-  private static final ThreadLocal<__WrappedObjectiveFunction> WRAPPERS = //
-      ThreadLocal.withInitial(() -> new __WrappedObjectiveFunction());
+  private static final AtomicReference<ThreadLocal<WrappedObjectiveFunction>> WRAPPERS = //
+      new AtomicReference<>(
+          ThreadLocal.withInitial(() -> new __WrappedObjectiveFunction()));
 
   /**
    * the random number generator thread local (we cannot use
@@ -53,7 +57,19 @@ public final class Runner {
       ThreadLocal.withInitial(() -> new Random());
 
   /** the maximum FEs */
-  private static final int MAX_FES = (1 << 20);
+  public static final int MAX_FES = (1 << 20);
+
+  /**
+   * Set the wrappers to be used to collect the results and write the log
+   *
+   * @param wrapper
+   *          the wrapper
+   */
+  public static final void setWrapper(
+      final Supplier<WrappedObjectiveFunction> wrapper) {
+    Objects.requireNonNull(wrapper);
+    Runner.WRAPPERS.set(ThreadLocal.withInitial(wrapper));
+  }
 
   /**
    * perform one run of the algorithm
@@ -126,8 +142,8 @@ public final class Runner {
           / ((double) (WModel_Ruggedness.max_gamma(n)))));
       writer.newLine();
 
-      final __WrappedObjectiveFunction wrapped = Runner.WRAPPERS.get();
-      wrapped._setup(f);
+      final WrappedObjectiveFunction wrapped = Runner.WRAPPERS.get().get();
+      wrapped.setup(f, writer, startTime);
 
       writer.write("# objective: "); //$NON-NLS-1$
       writer.write(f.getClass().toString());
@@ -193,42 +209,12 @@ public final class Runner {
         writer.newLine();
         writer.write("# RESULTS");//$NON-NLS-1$
         writer.newLine();
-        writer.write("# Format: FEs consumedTimeMS f f/n");//$NON-NLS-1$
-        writer.newLine();
-
         writer.flush();
 
         final Random random = Runner.RANDOM.get();
         random.setSeed(seed);
         algorithm.solve(wrapped, random);
-
-        int i = wrapped.m_logSize;
-
-        if ((wrapped.m_fes > 0L) && ((i <= 0)
-            || (wrapped.m_log[i - 1].m_fes != wrapped.m_fes))) {
-          // add an end point
-          final __WrappedObjectiveFunction._LogPoint p = wrapped.m_log[i++];
-          p.m_fes = wrapped.m_fes;
-          p.m_value = wrapped.m_best;
-          p.m_time = System.currentTimeMillis();
-        }
-
-        if (i > 0) {
-          final double div = n;
-          for (final __WrappedObjectiveFunction._LogPoint p : wrapped.m_log) {
-            writer.write(Integer.toString(p.m_fes));
-            writer.write('\t');
-            writer.write(Long.toString(p.m_time - startTime));
-            writer.write('\t');
-            writer.write(Integer.toString(p.m_value));
-            writer.write('\t');
-            writer.write(Double.toString(p.m_value / div));
-            writer.newLine();
-            if ((--i) <= 0) {
-              break;
-            }
-          }
-        }
+        wrapped.flush();
       } catch (final Throwable error) {
         try {
           writer.write('#');
@@ -255,25 +241,6 @@ public final class Runner {
           ConsoleIO.stderr("An error occured while performing run " + //$NON-NLS-1$
               logFile, error);
         }
-      }
-
-      writer.write('#');
-      writer.newLine();
-      writer.write("# SUMMARY: ");//$NON-NLS-1$
-      writer.write((wrapped.m_best <= 0) ? "success" : //$NON-NLS-1$
-          "failure");//$NON-NLS-1$
-      writer.newLine();
-      writer.write("# best result: ");//$NON-NLS-1$
-      writer.write(Integer.toString(wrapped.m_best));
-      writer.newLine();
-
-      writer.write("# consumed FEs: "); //$NON-NLS-1$
-      writer.write(Long.toString(wrapped.m_fes));
-      writer.newLine();
-      if (wrapped.m_fes > Runner.MAX_FES) {
-        writer.write(//
-            "# The algorithm performed more than the permitted maximum FEs. All results above the limit have been ignored."); //$NON-NLS-1$
-        writer.newLine();
       }
 
       final long endTime = System.currentTimeMillis();
@@ -939,14 +906,10 @@ public final class Runner {
   }
 
   /**
-   * Run the given algorithm on the specified problem
+   * Try to generate a unique sequence of seeds for the given problem setup
+   * and run number. The goal of this function is to be able to reproduce
+   * experiments.
    *
-   * @param <T>
-   *          the representation
-   * @param algorithm
-   *          the algorithm
-   * @param factory
-   *          the objective factory
    * @param n
    *          the n
    * @param mu
@@ -955,16 +918,12 @@ public final class Runner {
    *          the nu value
    * @param gamma
    *          the gamma
-   * @param baseFolder
-   *          the base folder
    * @param runs
    *          the number of runs
+   * @return the sequence of seeds
    */
-  private static final <T> void __run(
-      final WModel_SingleObjective.Factory<T> factory, //
-      final Algorithm<T> algorithm, //
-      final int n, final int mu, final int nu, final int gamma,
-      final Path baseFolder, final int runs) {
+  public static final long[] createSeeds(final int n, final int mu,
+      final int nu, final int gamma, final int runs) {
 
     // We try to create unique seeds for each run.
     // We therefore first generate a hopefully unique key from the
@@ -999,6 +958,40 @@ public final class Runner {
       }
       seeds[run] = nextSeed;
     }
+
+    return (seeds);
+  }
+
+  /**
+   * Run the given algorithm on the specified problem
+   *
+   * @param <T>
+   *          the representation
+   * @param algorithm
+   *          the algorithm
+   * @param factory
+   *          the objective factory
+   * @param n
+   *          the n
+   * @param mu
+   *          the mu value
+   * @param nu
+   *          the nu value
+   * @param gamma
+   *          the gamma
+   * @param baseFolder
+   *          the base folder
+   * @param runs
+   *          the number of runs
+   */
+  private static final <T> void __run(
+      final WModel_SingleObjective.Factory<T> factory, //
+      final Algorithm<T> algorithm, //
+      final int n, final int mu, final int nu, final int gamma,
+      final Path baseFolder, final int runs) {
+
+    // create the seeds
+    final long[] seeds = Runner.createSeeds(n, mu, nu, gamma, runs);
 
     // Now we can enqueue one job for every run.
     SimpleParallelExecutor.executeMultiple((consumer) -> {
@@ -1057,51 +1050,39 @@ public final class Runner {
    * memory.
    */
   @SuppressWarnings("rawtypes")
-  private static final class __WrappedObjectiveFunction
+  public static class WrappedObjectiveFunction
       extends WModel_SingleObjective {
     /** the wrapped objective function */
-    private WModel_SingleObjective m_wrapped;
+    protected WModel_SingleObjective m_wrapped;
 
-    /** the log */
-    _LogPoint[] m_log;
-    /** the log size */
-    int m_logSize;
-    /** the objective value of the best-so-far solution */
-    int m_best;
+    /** the buffered writer */
+    protected BufferedWriter m_writer;
+    /** the start time */
+    protected long m_startTime;
+
     /** the consumed FEs */
-    int m_fes;
+    protected int m_fes;
 
     /** create the logging evaluator */
-    __WrappedObjectiveFunction() {
+    protected WrappedObjectiveFunction() {
       super();
-
-      this.m_log = new _LogPoint[100];
-      for (int i = this.m_log.length; (--i) >= 0;) {
-        this.m_log[i] = new _LogPoint();
-      }
     }
 
     /**
-     * wrap a given single objective function
+     * setup: wrap a given single objective function
      *
      * @param wrap
      *          the function to wrap
+     * @param writer
+     *          the writer to write to
+     * @param startTime
+     *          the start time
      */
-    final void _setup(final WModel_SingleObjective wrap) {
-      final int n = wrap.get_n() + 2;
-      final int oldLength = this.m_log.length;
-      if (oldLength < n) {
-        final _LogPoint[] log = new _LogPoint[Math.max(n, n << 1)];
-        System.arraycopy(this.m_log, 0, log, 0, oldLength);
-        this.m_log = log;
-        for (int i = log.length; (--i) >= oldLength;) {
-          log[i] = new _LogPoint();
-        }
-      }
-
-      this.m_best = Integer.MAX_VALUE;
+    protected void setup(final WModel_SingleObjective wrap,
+        final BufferedWriter writer, final long startTime) {
+      this.m_writer = Objects.requireNonNull(writer);
+      this.m_startTime = startTime;
       this.m_wrapped = wrap;
-      this.m_logSize = 0;
       this.m_fes = 0;
     }
 
@@ -1138,6 +1119,88 @@ public final class Runner {
     /** {@inheritDoc} */
     @SuppressWarnings("unchecked")
     @Override
+    public int applyAsInt(final Object value) {
+      final int res = this.m_wrapped.applyAsInt(value);
+      ++this.m_fes;
+      return res;
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public boolean shouldTerminate() {
+      return (this.m_fes >= Runner.MAX_FES);
+    }
+
+    /**
+     * Flush the results of the experiment to the log
+     *
+     * @throws IOException
+     *           if i/o fails
+     */
+    protected void flush() throws IOException {
+      this.m_wrapped = null;
+      this.m_writer = null;
+      this.m_startTime = -1L;
+      this.m_fes = 0;
+    }
+  }
+
+  /**
+   * The internal wrapped objective function logs the algorithm progress in
+   * memory.
+   */
+  private static final class __WrappedObjectiveFunction
+      extends WrappedObjectiveFunction {
+    /** the log */
+    private _LogPoint[] m_log;
+    /** the log size */
+    private int m_logSize;
+    /** the objective value of the best-so-far solution */
+    private int m_best;
+
+    /** create the logging evaluator */
+    __WrappedObjectiveFunction() {
+      super();
+
+      this.m_log = new _LogPoint[100];
+      for (int i = this.m_log.length; (--i) >= 0;) {
+        this.m_log[i] = new _LogPoint();
+      }
+    }
+
+    /**
+     * setup: wrap a given single objective function
+     *
+     * @param wrap
+     *          the function to wrap
+     * @param writer
+     *          the writer to write to
+     * @param startTime
+     *          the start time
+     */
+    @Override
+    protected final void setup(final WModel_SingleObjective wrap,
+        final BufferedWriter writer, final long startTime) {
+      super.setup(wrap, writer, startTime);
+
+      final int n = wrap.get_n() + 2;
+      final int oldLength = this.m_log.length;
+
+      if (oldLength < n) {
+        final _LogPoint[] log = new _LogPoint[Math.max(n, n << 1)];
+        System.arraycopy(this.m_log, 0, log, 0, oldLength);
+        this.m_log = log;
+        for (int i = log.length; (--i) >= oldLength;) {
+          log[i] = new _LogPoint();
+        }
+      }
+
+      this.m_best = Integer.MAX_VALUE;
+      this.m_logSize = 0;
+    }
+
+    /** {@inheritDoc} */
+    @Override
     public final int applyAsInt(final Object value) {
       final int res = this.m_wrapped.applyAsInt(value);
       ++this.m_fes;
@@ -1160,8 +1223,69 @@ public final class Runner {
       return ((this.m_best <= 0) || (this.m_fes >= Runner.MAX_FES));
     }
 
+    /**
+     * Flush the results of the experiment to the log
+     *
+     * @throws IOException
+     *           if i/o fails
+     */
+    @Override
+    protected final void flush() throws IOException {
+      this.m_writer.write("# Format: FEs consumedTimeMS f f/n");//$NON-NLS-1$
+      this.m_writer.newLine();
+      int i = this.m_logSize;
+
+      if ((this.m_fes > 0L)
+          && ((i <= 0) || (this.m_log[i - 1].m_fes != this.m_fes))) {
+        // add an end point
+        final __WrappedObjectiveFunction._LogPoint p = this.m_log[i++];
+        p.m_fes = this.m_fes;
+        p.m_value = this.m_best;
+        p.m_time = System.currentTimeMillis();
+      }
+
+      final double div = this.get_n();
+
+      if (i > 0) {
+
+        for (final __WrappedObjectiveFunction._LogPoint p : this.m_log) {
+          this.m_writer.write(Integer.toString(p.m_fes));
+          this.m_writer.write('\t');
+          this.m_writer.write(Long.toString(p.m_time - this.m_startTime));
+          this.m_writer.write('\t');
+          this.m_writer.write(Integer.toString(p.m_value));
+          this.m_writer.write('\t');
+          this.m_writer.write(Double.toString(p.m_value / div));
+          this.m_writer.newLine();
+          if ((--i) <= 0) {
+            break;
+          }
+        }
+      }
+
+      this.m_writer.write('#');
+      this.m_writer.newLine();
+      this.m_writer.write("# SUMMARY: ");//$NON-NLS-1$
+      this.m_writer.write((this.m_best <= 0) ? "success" : //$NON-NLS-1$
+          "failure");//$NON-NLS-1$
+      this.m_writer.newLine();
+      this.m_writer.write("# best result: ");//$NON-NLS-1$
+      this.m_writer.write(Integer.toString(this.m_best));
+      this.m_writer.newLine();
+
+      this.m_writer.write("# consumed FEs: "); //$NON-NLS-1$
+      this.m_writer.write(Long.toString(this.m_fes));
+      this.m_writer.newLine();
+      if (this.m_fes > Runner.MAX_FES) {
+        this.m_writer.write(//
+            "# The algorithm performed more than the permitted maximum FEs. All results above the limit have been ignored."); //$NON-NLS-1$
+        this.m_writer.newLine();
+      }
+      super.flush();
+    }
+
     /** a log point */
-    static final class _LogPoint {
+    private static final class _LogPoint {
       /** the consumed fes */
       int m_fes;
       /** the current time */
