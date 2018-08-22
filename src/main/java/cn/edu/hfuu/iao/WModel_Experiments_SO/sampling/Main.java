@@ -36,7 +36,7 @@ public class Main {
         "Running Selected Example Experiments and Collecting All Results"); //$NON-NLS-1$
 
     final int maxRuns = 10;
-    final int[] n = new int[] { 10, 100, 1000, 10000 };
+    final int[] n = new int[] { 10, 32, 75, 100 };
     final double[] nu1 = new double[] { 0, 0.5, 1 };
     final double[] gamma1 = new double[] { 0, 0.25, 0.5, 0.75, 1 };
     final int[] mu = new int[] { 1, 3 };
@@ -123,8 +123,8 @@ public class Main {
       // we directly store the text in our buffer
       if ((++this.m_fes) <= Runner.MAX_FES) {
         if (this.m_index > 0) {
-          this.m_log[this.m_index++] = ' ';
-        }        
+          this.m_log[this.m_index++] = '\n';
+        }
         boolean print = false;
         for (int shift = 28; shift >= 0; shift -= 4) {
           final int ch = ((res >>> shift) & 0xf);
@@ -152,7 +152,7 @@ public class Main {
 
       if (this.m_fes > 0) {
         this.m_writer.write(
-            "# Format: all results in hexadecimal notation, space separated");//$NON-NLS-1$
+            "# Format: all results in hexadecimal notation, one number per line, each line = 1 FE");//$NON-NLS-1$
         this.m_writer.newLine();
         this.m_writer.write(this.m_log, 0, this.m_index);
         this.m_writer.newLine();
