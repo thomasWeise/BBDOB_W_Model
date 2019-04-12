@@ -44,7 +44,7 @@ public final class WModel_Ruggedness {
 
     final int upper = ((gamma - max)
         + (((q - start - 1) * (q - start)) >>> 1));
-    --j;
+    --j; // in the paper, this incorrectly says j=start, while it is j=q=n
     for (int i = 1; i <= upper; i++) {
       final int t = r[--j];
       r[j] = r[q];
