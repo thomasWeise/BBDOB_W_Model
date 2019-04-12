@@ -137,6 +137,9 @@ public class WModel_Ruggedness_Test extends TestBase {
       int Delta = 0;
       for (int i = r.length - 1; (--i) >= 0;) {
         Delta += Math.abs(r[i] - r[i + 1]);
+        for (int j = r.length; (--j) > i;) {
+          Assert.assertNotEquals(r[i], r[j]);
+        }
       }
       Assert.assertEquals(gamma, Delta - q);
     }
