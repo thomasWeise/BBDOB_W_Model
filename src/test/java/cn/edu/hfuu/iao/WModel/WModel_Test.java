@@ -219,6 +219,73 @@ public abstract class WModel_Test<T> extends TestBase {
   /**
    * run a single epistasis test case
    *
+   * @param nu
+   *          the nu
+   */
+  protected final void test_epistasis_preservesOnes(final int nu) {
+    StringBuilder sb = new StringBuilder();
+    int oneCount = 0;
+    final int max = (1 << (nu - 1));
+    for (int i = (1 << nu); (--i) >= 0;) {
+      for (int j = max; j > 0; j >>>= 1) {
+        if ((i & j) != 0) {
+          sb.append('1');
+          oneCount++;
+        } else {
+          sb.append('0');
+        }
+      }
+    }
+
+    String s = sb.toString();
+    sb = null;
+    final T tt = this.fromString(s);
+    s = null;
+    final String t = this.toString(this.compute_epistasis(tt, nu));
+    for (int i = t.length(); (--i) >= 0;) {
+      if (t.charAt(i) == '1') {
+        oneCount--;
+      }
+    }
+
+    Assert.assertEquals(0, oneCount);
+  }
+
+  /**
+   * test whether the epistasis level 2 preserves all ones
+   */
+  @Test(timeout = 3600000)
+  public void test_epistasis_preservesOnes_2() {
+    this.test_epistasis_preservesOnes(2);
+  }
+
+  /**
+   * test whether the epistasis level 3 preserves all ones
+   */
+  @Test(timeout = 3600000)
+  public void test_epistasis_preservesOnes_3() {
+    this.test_epistasis_preservesOnes(3);
+  }
+
+  /**
+   * test whether the epistasis level 4 preserves all ones
+   */
+  @Test(timeout = 3600000)
+  public void test_epistasis_preservesOnes_4() {
+    this.test_epistasis_preservesOnes(4);
+  }
+
+  /**
+   * test whether the epistasis level 5 preserves all ones
+   */
+  @Test(timeout = 3600000)
+  public void test_epistasis_preservesOnes_5() {
+    this.test_epistasis_preservesOnes(5);
+  }
+
+  /**
+   * run a single epistasis test case
+   *
    * @param in
    *          the input string
    * @param out
