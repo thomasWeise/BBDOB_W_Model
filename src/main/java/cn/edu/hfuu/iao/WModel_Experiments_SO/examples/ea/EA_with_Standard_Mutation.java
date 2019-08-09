@@ -9,10 +9,10 @@ import cn.edu.hfuu.iao.WModel.WModel_SingleObjective;
 import cn.edu.hfuu.iao.WModel_Experiments_SO.Algorithm_Boolean;
 
 /**
- * a simple (mu+lambda) EA using bit-flip mutation and uniform crossover,
+ * a simple (mu+lambda) EA using standard mutation and uniform crossover,
  * which prunes multiple occurrences of the same solution automatically
  */
-public class EA extends Algorithm_Boolean {
+public class EA_with_Standard_Mutation extends Algorithm_Boolean {
   /** the number of parents */
   private final int m_mu;
   /** the number of offsprings */
@@ -30,7 +30,8 @@ public class EA extends Algorithm_Boolean {
    * @param crossoverRate
    *          the crossover rate
    */
-  public EA(final int mu, final int lambda, final double crossoverRate) {
+  public EA_with_Standard_Mutation(final int mu, final int lambda,
+      final double crossoverRate) {
     super();
     this.m_mu = mu;
     this.m_lambda = lambda;
@@ -90,12 +91,13 @@ public class EA extends Algorithm_Boolean {
               final boolean[] parent_2 = all[random
                   .nextInt(this.m_mu)].m_solution;
               if (parent_1 != parent_2) {
-                EA.__crossover(parent_1, parent_2, dest, random);
+                EA_with_Standard_Mutation.__crossover(parent_1, parent_2,
+                    dest, random);
                 break reproduce;
               }
             }
           }
-          EA.__mutation(parent_1, dest, random);
+          EA_with_Standard_Mutation.__mutation(parent_1, dest, random);
         }
 
         // step to the next first parent
@@ -128,7 +130,7 @@ public class EA extends Algorithm_Boolean {
   }
 
   /**
-   * Single bit-flip mutation
+   * Flip each bit with probability 1/n
    *
    * @param p1
    *          the first parent
@@ -139,20 +141,26 @@ public class EA extends Algorithm_Boolean {
    */
   private static final void __mutation(final boolean[] p1,
       final boolean[] dest, final Random random) {
-    System.arraycopy(p1, 0, dest, 0, p1.length);
-    dest[random.nextInt(p1.length)] ^= true;
+    boolean changed = false;
+    do {
+      for (int i = dest.length; (--i) >= 0;) {
+        final boolean change = (random.nextInt(dest.length) <= 0);
+        dest[i] = (change ^ p1[i]);
+        changed |= change;
+      }
+    } while (!changed);
   }
 
   /** {@inheritDoc} */
   @Override
   public final String toString() {
-    return "(mu+lambda) Evolutionary Algorithm"; //$NON-NLS-1$
+    return "(mu+lambda) Evolutionary Algorithm with Standard Mutation"; //$NON-NLS-1$
   }
 
   /** {@inheritDoc} */
   @Override
   public final String folderName() {
-    return "ea_m=" + this.m_mu + //$NON-NLS-1$
+    return "eaWSM_m=" + this.m_mu + //$NON-NLS-1$
         "_l=" + this.m_lambda + //$NON-NLS-1$
         "_cr=" + //$NON-NLS-1$
         Double.toString(this.m_crossoverRate).substring(2);

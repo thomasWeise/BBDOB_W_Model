@@ -10,7 +10,7 @@ import cn.edu.hfuu.iao.WModel_Experiments_SO.Algorithm_Boolean;
 
 /**
  * A (mu+lambda) EA using bit-flip mutation and uniform crossover, which
- * prunes multiple occurences of the same solution automatically together
+ * prunes multiple occurrences of the same solution automatically together
  * with frequency fitness assignment.
  */
 public class FFA_EA extends Algorithm_Boolean {

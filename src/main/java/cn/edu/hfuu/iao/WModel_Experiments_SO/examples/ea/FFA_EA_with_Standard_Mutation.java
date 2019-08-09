@@ -9,10 +9,11 @@ import cn.edu.hfuu.iao.WModel.WModel_SingleObjective;
 import cn.edu.hfuu.iao.WModel_Experiments_SO.Algorithm_Boolean;
 
 /**
- * a simple (mu+lambda) EA using bit-flip mutation and uniform crossover,
- * which prunes multiple occurrences of the same solution automatically
+ * A (mu+lambda) EA using standard mutation and uniform crossover, which
+ * prunes multiple occurrences of the same solution automatically together
+ * with frequency fitness assignment.
  */
-public class EA extends Algorithm_Boolean {
+public class FFA_EA_with_Standard_Mutation extends Algorithm_Boolean {
   /** the number of parents */
   private final int m_mu;
   /** the number of offsprings */
@@ -30,7 +31,8 @@ public class EA extends Algorithm_Boolean {
    * @param crossoverRate
    *          the crossover rate
    */
-  public EA(final int mu, final int lambda, final double crossoverRate) {
+  public FFA_EA_with_Standard_Mutation(final int mu, final int lambda,
+      final double crossoverRate) {
     super();
     this.m_mu = mu;
     this.m_lambda = lambda;
@@ -42,14 +44,15 @@ public class EA extends Algorithm_Boolean {
   public final void solve(final WModel_SingleObjective<boolean[]> f,
       final Random random) {
     final int n = f.get_candidate_solution_length();
+    final long[] ffa_table = new long[f.get_n() + 1];
 
     // allocate the necessary data structure
     final __Individual[] all = new __Individual[this.m_lambda + this.m_mu];
 
     // fill the individuals with random solutions
     for (int i = all.length; (--i) >= 0;) {
-      Algorithm_Boolean
-          .randomize((all[i] = new __Individual(n)).m_solution, random);
+      Algorithm_Boolean.randomize(//
+          (all[i] = new __Individual(n)).m_solution, random);
     }
 
     int startIndex = 0;
@@ -63,12 +66,24 @@ public class EA extends Algorithm_Boolean {
         }
       }
 
+      // update the ffa table
+      long max_ffa = 0L;
+      for (final __Individual indi : all) {
+        max_ffa = Math.max(max_ffa, ++ffa_table[indi.m_quality]);
+      }
+
+      // set the fitness
+      for (final __Individual indi : all) {
+        indi.m_fitness = ffa_table[indi.m_quality];
+      }
+
       // punish duplicates in the population
+      ++max_ffa;
       for (int i = all.length; (--i) > 0;) {
         final boolean[] current = all[i].m_solution;
         for (int j = i; (--j) >= i;) {
           if (Arrays.equals(current, all[j].m_solution)) {
-            all[i].m_quality += n;
+            all[i].m_fitness += max_ffa;
           }
         }
       }
@@ -90,12 +105,13 @@ public class EA extends Algorithm_Boolean {
               final boolean[] parent_2 = all[random
                   .nextInt(this.m_mu)].m_solution;
               if (parent_1 != parent_2) {
-                EA.__crossover(parent_1, parent_2, dest, random);
+                FFA_EA_with_Standard_Mutation.__crossover(parent_1,
+                    parent_2, dest, random);
                 break reproduce;
               }
             }
           }
-          EA.__mutation(parent_1, dest, random);
+          FFA_EA_with_Standard_Mutation.__mutation(parent_1, dest, random);
         }
 
         // step to the next first parent
@@ -128,7 +144,7 @@ public class EA extends Algorithm_Boolean {
   }
 
   /**
-   * Single bit-flip mutation
+   * Flip each bit with probability 1/n
    *
    * @param p1
    *          the first parent
@@ -139,20 +155,26 @@ public class EA extends Algorithm_Boolean {
    */
   private static final void __mutation(final boolean[] p1,
       final boolean[] dest, final Random random) {
-    System.arraycopy(p1, 0, dest, 0, p1.length);
-    dest[random.nextInt(p1.length)] ^= true;
+    boolean changed = false;
+    do {
+      for (int i = dest.length; (--i) >= 0;) {
+        final boolean change = (random.nextInt(dest.length) <= 0);
+        dest[i] = (change ^ p1[i]);
+        changed |= change;
+      }
+    } while (!changed);
   }
 
   /** {@inheritDoc} */
   @Override
   public final String toString() {
-    return "(mu+lambda) Evolutionary Algorithm"; //$NON-NLS-1$
+    return "(mu+lambda) Frequency Fitness Evolutionary Algorithm with Standard Mutation"; //$NON-NLS-1$
   }
 
   /** {@inheritDoc} */
   @Override
   public final String folderName() {
-    return "ea_m=" + this.m_mu + //$NON-NLS-1$
+    return "ffa_eaWSM_m=" + this.m_mu + //$NON-NLS-1$
         "_l=" + this.m_lambda + //$NON-NLS-1$
         "_cr=" + //$NON-NLS-1$
         Double.toString(this.m_crossoverRate).substring(2);
@@ -176,7 +198,7 @@ public class EA extends Algorithm_Boolean {
     writer.newLine();
     writer.write("# crossover: uniform");//$NON-NLS-1$
     writer.newLine();
-    writer.write("# fitness: punishing repeated strings");//$NON-NLS-1$
+    writer.write("# fitness: FFA + punishing repeated strings");//$NON-NLS-1$
     writer.newLine();
   }
 
@@ -188,6 +210,9 @@ public class EA extends Algorithm_Boolean {
 
     /** the quality */
     int m_quality;
+
+    /** the fitness */
+    long m_fitness;
 
     /**
      * create
@@ -203,6 +228,10 @@ public class EA extends Algorithm_Boolean {
     /** {@inheritDoc} */
     @Override
     public final int compareTo(final __Individual o) {
+      final int result = Long.compare(this.m_fitness, o.m_fitness);
+      if (result != 0) {
+        return result;
+      }
       return Integer.compare(this.m_quality, o.m_quality);
     }
   }
