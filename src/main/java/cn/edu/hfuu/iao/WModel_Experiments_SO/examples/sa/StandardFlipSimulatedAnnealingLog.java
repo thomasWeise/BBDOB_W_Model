@@ -103,7 +103,7 @@ public final class StandardFlipSimulatedAnnealingLog
   /** {@inheritDoc} */
   @Override
   public final String toString() {
-    return "Standard-Flip Slimulated Annealing"; //$NON-NLS-1$
+    return "Standard-Flip Simulated Annealing"; //$NON-NLS-1$
   }
 
   /** {@inheritDoc} */

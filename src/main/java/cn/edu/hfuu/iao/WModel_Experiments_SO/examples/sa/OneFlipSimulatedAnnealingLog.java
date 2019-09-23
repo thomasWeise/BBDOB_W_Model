@@ -77,7 +77,7 @@ public final class OneFlipSimulatedAnnealingLog extends Algorithm_Boolean {
   /** {@inheritDoc} */
   @Override
   public final String toString() {
-    return "1-Flip Slimulated Annealing"; //$NON-NLS-1$
+    return "1-Flip Simulated Annealing"; //$NON-NLS-1$
   }
 
   /** {@inheritDoc} */

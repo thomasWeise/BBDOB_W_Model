@@ -616,17 +616,21 @@ public final class Runner {
       final int max) {
     HashSet<Integer> list = new HashSet<>();
     for (int i = 16; ((i >= 16) && (i < max)); i <<= 1) {
-      Runner.__add(i, list, 5, Runner.MAX_FES);
+      Runner.__add(i, list, 5, max);
     }
-    for (int i = 10; ((i >= 10) && (i < max)); i *= 10) {
-      Runner.__add(i, list, 10, Runner.MAX_FES);
-      Runner.__add(((i * 3) >>> 2), list, 10, Runner.MAX_FES);
-      Runner.__add((i >>> 1), list, 10, Runner.MAX_FES);
-      Runner.__add((i >>> 2), list, 10, Runner.MAX_FES);
+    int tmax = Math.max(Math.max(max, (max << 1)),
+        Math.max((max << 2), (max * 3)));
+    tmax = Math.max(tmax, tmax << 1);
+    tmax = Math.max(tmax, tmax + 1);
+    for (int i = 10; ((i >= 10) && (i <= tmax)); i *= 10) {
+      Runner.__add(i, list, 10, max);
+      Runner.__add(((i * 3) >>> 2), list, 10, max);
+      Runner.__add((i >>> 1), list, 10, max);
+      Runner.__add((i >>> 2), list, 10, max);
     }
     list.add(Integer.valueOf(max));
     for (int i = max; i >= 100; i >>>= 1) {
-      Runner.__add(i, list, 5, Runner.MAX_FES);
+      Runner.__add(i, list, 5, max);
     }
 
     final int[] array = Runner.__toArray(list);
@@ -833,7 +837,8 @@ public final class Runner {
     SimpleParallelExecutor.executeMultiple(
         (consumer) -> mus.apply(n).forEachRemaining((final int mu) -> //
         consumer.accept(() -> //
-        Runner.__run(factory, algorithm, n, mu, nus, gammas, baseFolder, runs))));
+        Runner.__run(factory, algorithm, n, mu, nus, gammas, baseFolder,
+            runs))));
   }
 
   /**

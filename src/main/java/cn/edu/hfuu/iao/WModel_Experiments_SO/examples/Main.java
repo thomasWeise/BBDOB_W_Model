@@ -92,7 +92,7 @@ public class Main {
 
     Runner.run(//
         // run experiments until n=100
-        100, //
+        75, //
         // true==wait until all tasks are finished, then compress output
         // folder
         true, Main.//
