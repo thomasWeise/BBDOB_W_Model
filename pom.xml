@@ -4,7 +4,7 @@
 
 	<groupId>cn.edu.hfuu.iao</groupId>
 	<artifactId>BBDOB_W_Model</artifactId>
-	<version>1.0.3</version>
+	<version>1.0.4</version>
 	<packaging>jar</packaging>
 	<name>BBDOB_W_Model</name>
 	<description>The W-Model, a tunable Black-Box Discrete Optimization Benchmarking (BB-DOB) problem, implemented for the BB-DOB@GECCO Workshop.</description>
@@ -71,6 +71,9 @@
 				<directory>src/main/resources</directory>
 				<filtering>true</filtering>
 			</resource>
+			<resource>
+				<directory>${basedir}/src/main/java</directory>
+			</resource>
 		</resources>
 		<!-- Here we manage common configurations for plugins. -->
 		<plugins>
@@ -94,19 +97,6 @@
 									<ignore />
 								</action>
 							</pluginExecution>
-							<pluginExecution>
-								<pluginExecutionFilter>
-									<groupId>org.apache.maven.plugins</groupId>
-									<artifactId>maven-antrun-plugin</artifactId>
-									<versionRange>[1.8,)</versionRange>
-									<goals>
-										<goal>run</goal>
-									</goals>
-								</pluginExecutionFilter>
-								<action>
-									<ignore />
-								</action>
-							</pluginExecution>
 						</pluginExecutions>
 					</lifecycleMappingMetadata>
 				</configuration>
@@ -116,7 +106,7 @@
 				<!-- The Maven Java Compiler plugin. -->
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-compiler-plugin</artifactId>
-				<version>3.5.1</version>
+				<version>3.8.0</version>
 				<configuration>
 					<source>${java.version}</source>
 					<target>${java.version}</target>
@@ -130,19 +120,20 @@
 				<!-- The plugin for running the tests. -->
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-surefire-plugin</artifactId>
-				<version>2.19.1</version>
+				<version>3.0.0-M3</version>
 			</plugin>
 
 			<plugin>
 				<!-- The JavaDoc generating and packaging plugin. -->
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-javadoc-plugin</artifactId>
-				<version>2.9.1</version>
+				<version>3.1.0 </version>
 				<configuration>
 					<show>private</show>
 					<detectLinks>true</detectLinks>
 					<detectJavaApiLink>true</detectJavaApiLink>
 					<quiet>true</quiet>
+                	<failOnError>false</failOnError>
 				</configuration>
 				<executions>
 					<execution>
@@ -158,7 +149,7 @@
 				<!-- A plugin for generating a source jar. -->
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-source-plugin</artifactId>
-				<version>2.3</version>
+				<version>3.0.0</version>
 				<configuration>
 					<includePom>true</includePom>
 					<useDefaultExcludes>true</useDefaultExcludes>
@@ -178,7 +169,7 @@
 				<!-- The plugin for generating the actual jar archive. -->
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-jar-plugin</artifactId>
-				<version>2.6</version>
+				<version>3.1.1</version>
 				<configuration>
 					<archive>
 						<manifest>
@@ -194,20 +185,17 @@
 
 	<reporting>
 		<plugins>
-
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-project-info-reports-plugin</artifactId>
-				<version>2.7</version>
+				<version>3.0.0</version>
 			</plugin>
 
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-surefire-report-plugin</artifactId>
-				<version>2.18</version>
+				<version>3.0.0-M3</version>
 			</plugin>
-
 		</plugins>
 	</reporting>
-
 </project>
