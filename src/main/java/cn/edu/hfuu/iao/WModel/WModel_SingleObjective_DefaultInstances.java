@@ -44,6 +44,12 @@ public class WModel_SingleObjective_DefaultInstances {
     return result;
   }
 
+  /**
+   * the main routine
+   *
+   * @param params
+   *          arguments
+   */
   public static final void main(final String[] params) {
     for (final Supplier<
         WModel_SingleObjective_Boolean> s : WModel_SingleObjective_DefaultInstances

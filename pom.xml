@@ -4,7 +4,7 @@
 
 	<groupId>cn.edu.hfuu.iao</groupId>
 	<artifactId>BBDOB_W_Model</artifactId>
-	<version>1.0.4</version>
+	<version>1.0.5</version>
 	<packaging>jar</packaging>
 	<name>BBDOB_W_Model</name>
 	<description>The W-Model, a tunable Black-Box Discrete Optimization Benchmarking (BB-DOB) problem, implemented for the BB-DOB@GECCO Workshop.</description>

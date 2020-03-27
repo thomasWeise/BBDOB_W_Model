@@ -37,7 +37,7 @@ First, you need to add the following repository, which is a repository that can 
 ```
 
 Than you can add the dependency on our `BBDOB_W_Model` repository into your `dependencies` section.
-Here, `1.0.4` is the current version of  `BBDOB_W_Model`.
+Here, `1.0.5` is the current version of  `BBDOB_W_Model`.
 Notice that you may have more dependencies in your `dependencies` section, say on `junit`, but here I just put the one for `aitoa-code` as example.
 
 ```xml
@@ -45,7 +45,7 @@ Notice that you may have more dependencies in your `dependencies` section, say o
   <dependency>
     <groupId>com.github.thomasWeise</groupId>
     <artifactId>BBDOB_W_Model</artifactId>
-    <version>1.0.4</version>
+    <version>1.0.5</version>
   </dependency>
 </dependencies>
 
